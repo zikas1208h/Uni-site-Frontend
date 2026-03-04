@@ -1,10 +1,10 @@
-﻿﻿﻿import axios from 'axios';
+﻿﻿﻿﻿import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
-  timeout: 20000,
+  timeout: 30000,
 });
 
 // ── Cache with stale-while-revalidate ────────────────────────────────────
@@ -84,10 +84,10 @@ api.interceptors.response.use(
     const config = err.config;
     if (!config || config.__retried) return Promise.reject(err);
     const status = err.response?.status;
-    const isRetriable = !err.response || status === 503 || status === 502 || status >= 500;
+    const isRetriable = !err.response || status === 502 || status === 503 || status === 504 || status >= 500;
     if (!isRetriable) return Promise.reject(err);
     config.__retried = true;
-    await new Promise(r => setTimeout(r, 200));
+    await new Promise(r => setTimeout(r, 1500));
     return api(config);
   }
 );
@@ -151,12 +151,19 @@ export const courseAPI = {
 
 // Grade APIs
 export const gradeAPI = {
-  getStudentGrades:    () => cachedGet('grades:student',          () => api.get('/grades/student')),
-  getGPA:              () => cachedGet('grades:gpa',              () => api.get('/grades/gpa')),
-  getStatistics:       () => cachedGet('grades:stats',            () => api.get('/grades/statistics')),
-  getMyStatistics:     () => cachedGet('grades:my-stats',         () => api.get('/grades/statistics/my-courses')),
-  getGradeByCourse:    (id) => cachedGet(`grades:course:${id}`,   () => api.get(`/grades/course/${id}`)),
+  getStudentGrades:    () => cachedGet('grades:student',            () => api.get('/grades/student')),
+  getGPA:              () => cachedGet('grades:gpa',                () => api.get('/grades/gpa')),
+  getStatistics:       () => cachedGet('grades:stats',              () => api.get('/grades/statistics')),
+  getMyStatistics:     () => cachedGet('grades:my-stats',           () => api.get('/grades/statistics/my-courses')),
+  getGradeByCourse:    (id) => cachedGet(`grades:course:${id}`,     () => api.get(`/grades/course/${id}`)),
   getStudentGradesById:(id) => cachedGet(`grades:by-student:${id}`, () => api.get(`/grades/admin/student/${id}`)),
+  // New: set midterm or final score
+  saveSemesterGrade:   (data) => { clearCache('grades'); return api.post('/grades/semester', data); },
+  // New: grade a classwork entry (assignment/quiz) for one student
+  gradeClasswork:      (assignmentId, studentId, score) => {
+    clearCache('grades');
+    return api.patch(`/grades/classwork/${assignmentId}/student/${studentId}`, { score });
+  },
   addGrade:            (data) => { clearCache('grades'); return api.post('/grades', data); },
   deleteGrade:         (id)   => { clearCache('grades'); return api.delete(`/grades/${id}`); },
 };

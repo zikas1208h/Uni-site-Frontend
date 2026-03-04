@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth, isAnyAdmin } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -56,15 +56,25 @@ const Login = () => {
     try {
       await attemptLogin({ email, password });
     } catch (err) {
+      const status = err.response?.status;
       const isNetworkError = !err.response; // no response = timeout / network down
-      if (isNetworkError) {
+      const isServerError = status === 502 || status === 503 || status === 504 || status >= 500;
+      if (isNetworkError || isServerError) {
         // Auto-retry once silently
         setRetrying(true);
         try {
+          await new Promise(r => setTimeout(r, 800)); // short pause before retry
           await attemptLogin({ email, password });
           return; // success on retry
         } catch (retryErr) {
-          setError(retryErr.response?.data?.message || 'Connection failed. Please try again.');
+          const retryStatus = retryErr.response?.status;
+          if (retryStatus === 401) {
+            setError(retryErr.response?.data?.message || 'Invalid credentials');
+          } else if (!retryErr.response || retryStatus >= 500) {
+            setError('Connection failed. The server may be starting up — please wait a moment and try again.');
+          } else {
+            setError(retryErr.response?.data?.message || 'Login failed');
+          }
         } finally {
           setRetrying(false);
         }

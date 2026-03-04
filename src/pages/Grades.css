@@ -463,4 +463,41 @@ body.dark-mode .score-chip-val    { color: #e2e8f0; }
 body.dark-mode .score-chip-final .score-chip-name { color: #a78bfa; }
 body.dark-mode .score-chip-final .score-chip-val  { color: #c4b5fd; }
 
+/* ── Tab toggle (shared with ManageGrades) ── */
+.grade-mode-toggle {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.grade-mode-toggle .mode-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(148,163,184,0.25);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.grade-mode-toggle .mode-btn:hover { background: rgba(59,130,246,0.07); border-color: rgba(59,130,246,0.3); color: #2563eb; }
+.grade-mode-toggle .mode-btn.active { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.45); color: #1d4ed8; }
+
+/* ── Type badge ── */
+.comp-type-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(148,163,184,0.15);
+  color: #64748b;
+}
+.comp-type-badge[data-type="quiz"]       { background: rgba(99,102,241,0.12); color: #4f46e5; }
+.comp-type-badge[data-type="assignment"] { background: rgba(34,197,94,0.10);  color: #15803d; }
+.comp-type-badge[data-type="midterm"]    { background: rgba(245,158,11,0.12); color: #b45309; }
+.comp-type-badge[data-type="final"]      { background: rgba(139,92,246,0.12); color: #7c3aed; }
+
+
 

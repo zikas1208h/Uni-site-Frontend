@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { studentAPI, gradeAPI, courseAPI, authAPI, assignmentAPI, pageCache } from '../../services/api';
-import { useLanguage } from '../../context/LanguageContext';
+import { studentAPI, gradeAPI, courseAPI, authAPI, pageCache } from '../../services/api';
 import './ManageGrades.css';
 
 // ── Grade helpers ─────────────────────────────────────────────────────────────
@@ -20,15 +19,7 @@ const calcLetterGradeFromTotal = (total) => {
   if (total >= 50) return { grade: 'D-', gradePoint: 1.0 };
   return               { grade: 'F',  gradePoint: 0.0 };
 };
-
-const calcFromComponents = (comps) => {
-  const filled = comps.filter(c => c.score !== '' && c.score != null && Number(c.maxScore) > 0 && c.weight !== '' && c.weight != null);
-  if (!filled.length) return null;
-  const totalWeight = filled.reduce((s, c) => s + Number(c.weight), 0);
-  if (!totalWeight) return null;
-  const weighted = filled.reduce((s, c) => s + (Number(c.score) / Number(c.maxScore)) * Number(c.weight), 0);
-  return (weighted / totalWeight) * 100;
-};
+const RETAKE_MAX_SCORE = 83;
 
 const gradeColor = (g) => {
   if (!g) return '#94a3b8';
@@ -39,14 +30,14 @@ const gradeColor = (g) => {
   return '#ef4444';
 };
 
-const TYPE_ICONS = { quiz:'📋', midterm:'📄', final:'🎓', assignment:'📝', other:'📊' };
-const MANUAL_GRADES = ['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F'];
-const GRADE_POINTS  = { 'A+':4.0,'A':3.7,'A-':3.4,'B+':3.2,'B':3.0,'B-':2.8,'C+':2.6,'C':2.4,'C-':2.2,'D+':2.0,'D':1.5,'D-':1.0,'F':0.0 };
+const MANUAL_GRADES  = ['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F'];
+const GRADE_POINTS   = { 'A+':4.0,'A':3.7,'A-':3.4,'B+':3.2,'B':3.0,'B-':2.8,'C+':2.6,'C':2.4,'C-':2.2,'D+':2.0,'D':1.5,'D-':1.0,'F':0.0 };
+const TYPE_ICONS     = { quiz:'📋', assignment:'📝', midterm:'📄', final:'🎓', other:'📊' };
 
 const ManageGrades = () => {
-  const navigate = useNavigate();
-  const { t } = useLanguage();
+  const navigate  = useNavigate();
 
+  // ── Selection state ────────────────────────────────────────────────────────
   const [students,         setStudents]         = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchTerm,       setSearchTerm]       = useState('');
@@ -54,30 +45,48 @@ const ManageGrades = () => {
   const [enrolledCourses,  setEnrolledCourses]  = useState([]);
   const [gradedCourseIds,  setGradedCourseIds]  = useState(new Set());
   const [fetchingCourses,  setFetchingCourses]  = useState(false);
-
-  const [inputMode,         setInputMode]         = useState('components');
-  const [isRetake,          setIsRetake]          = useState(false);
-  const [components,        setComponents]        = useState([]);
-  const [loadingComponents, setLoadingComponents] = useState(false);
-
-  const [manualGrade, setManualGrade] = useState('A');
-  const [manualGP,    setManualGP]    = useState(4.0);
-  const [semester,    setSemester]    = useState('Spring');
-  const [year,        setYear]        = useState(new Date().getFullYear());
-
   const [selectedCourse,   setSelectedCourse]   = useState('');
+  const [activeTab,        setActiveTab]        = useState('semester'); // 'semester' | 'classwork'
+
+  // ── Semester grade state ───────────────────────────────────────────────────
+  const [midtermScore,     setMidtermScore]     = useState('');
+  const [midtermMaxScore,  setMidtermMaxScore]  = useState(40);
+  const [finalScore,       setFinalScore]       = useState('');
+  const [finalMaxScore,    setFinalMaxScore]    = useState(60);
+  const [finalAlreadySet,  setFinalAlreadySet]  = useState(false); // lock after first save
+  const [useManualGrade,   setUseManualGrade]   = useState(false);
+  const [manualGrade,      setManualGrade]      = useState('A');
+  const [semester,         setSemester]         = useState('Spring');
+  const [year,             setYear]             = useState(new Date().getFullYear());
+  const [isRetake,         setIsRetake]         = useState(false);
+
+  // ── Classwork state ────────────────────────────────────────────────────────
+  const [classworkEntries,    setClassworkEntries]    = useState([]); // from grade doc
+  const [loadingClasswork,    setLoadingClasswork]    = useState(false);
+  const [classworkScores,     setClassworkScores]     = useState({}); // { assignmentId: inputVal }
+  const [classworkEditing,    setClassworkEditing]    = useState({}); // { assignmentId: bool }
+  const [savingClasswork,     setSavingClasswork]     = useState({}); // { assignmentId: bool }
+
+  // ── UI state ───────────────────────────────────────────────────────────────
   const [loading,          setLoading]          = useState(false);
   const [endingCourse,     setEndingCourse]     = useState(false);
   const [error,            setError]            = useState('');
   const [success,          setSuccess]          = useState('');
   const [lastGradedCourse, setLastGradedCourse] = useState(null);
 
-  const compTotal   = useMemo(() => calcFromComponents(components), [components]);
-  const compPreview = compTotal != null ? { ...calcLetterGradeFromTotal(compTotal), total: compTotal } : null;
-  const hasFinalGraded = useMemo(() =>
-    components.some(c => c.type === 'final' && c.score !== '' && c.score != null),
-    [components]
-  );
+  // ── Compute semester preview ───────────────────────────────────────────────
+  const semesterPreview = useMemo(() => {
+    if (useManualGrade) return { grade: manualGrade, gradePoint: GRADE_POINTS[manualGrade], total: null };
+    const hasMid = midtermScore !== '' && midtermScore != null;
+    const hasFin = finalScore   !== '' && finalScore   != null;
+    if (!hasMid && !hasFin) return null;
+    const midPct = hasMid ? (Number(midtermScore) / Math.max(Number(midtermMaxScore), 1)) * 40 : 0;
+    const finPct = hasFin ? (Number(finalScore)   / Math.max(Number(finalMaxScore),   1)) * 60 : 0;
+    const total  = Math.min(Math.round((midPct + finPct) * 100) / 100, 100);
+    if (!hasFin) return { grade: null, gradePoint: null, total, midOnly: true };
+    const raw = calcLetterGradeFromTotal(isRetake ? Math.min(total, RETAKE_MAX_SCORE) : total);
+    return { ...raw, total };
+  }, [midtermScore, midtermMaxScore, finalScore, finalMaxScore, useManualGrade, manualGrade, isRetake]);
 
   // ── Load students ──────────────────────────────────────────────────────────
   useEffect(() => {
@@ -114,9 +123,8 @@ const ManageGrades = () => {
   const handleStudentChange = async (e) => {
     const studentId = e.target.value;
     setSelectedStudent(students.find(s => s._id === studentId) || null);
-    setSelectedCourse('');
-    setEnrolledCourses([]); setGradedCourseIds(new Set());
-    setComponents([]); setError(''); setSuccess(''); setLastGradedCourse(null);
+    setSelectedCourse(''); setEnrolledCourses([]); setGradedCourseIds(new Set());
+    resetCourseState();
     if (!studentId) return;
     setFetchingCourses(true);
     try {
@@ -126,122 +134,99 @@ const ManageGrades = () => {
       ]);
       setEnrolledCourses(stuRes.data.enrolledCourses || []);
       setGradedCourseIds(new Set(
-        (gradesRes.data?.grades || []).map(g => (g.course?._id || g.course || '').toString())
+        (gradesRes.data?.grades || [])
+          .filter(g => g.semesterGrade?.isFinalized)
+          .map(g => (g.course?._id || g.course || '').toString())
       ));
       if (!stuRes.data.enrolledCourses?.length) setError('This student has no enrolled courses.');
     } catch { setError('Failed to load courses.'); }
     finally { setFetchingCourses(false); }
   };
 
-  // ── Course change — auto-load assignments ─────────────────────────────────
+  const resetCourseState = () => {
+    setMidtermScore(''); setMidtermMaxScore(40); setFinalScore(''); setFinalMaxScore(60);
+    setFinalAlreadySet(false); setUseManualGrade(false); setManualGrade('A');
+    setIsRetake(false); setClassworkEntries([]); setClassworkScores({});
+    setClassworkEditing({}); setSavingClasswork({}); setError(''); setSuccess(''); setLastGradedCourse(null);
+  };
+
+  // ── Course change ──────────────────────────────────────────────────────────
   const handleCourseChange = async (courseId) => {
     setSelectedCourse(courseId);
-    setComponents([]); setError(''); setSuccess('');
-    setIsRetake(false);
+    resetCourseState();
     if (!courseId || !selectedStudent) return;
-
-    setLoadingComponents(true);
+    setLoadingClasswork(true);
     try {
-      const [compRes, gradesRes] = await Promise.all([
-        assignmentAPI.getCourseComponents(courseId).catch(() => ({ data: [] })),
-        gradeAPI.getStudentGradesById(selectedStudent._id).catch(() => ({ data: { grades: [] } })),
-      ]);
-
-      const courseComponents = compRes.data || [];
+      const gradesRes = await gradeAPI.getStudentGradesById(selectedStudent._id).catch(() => ({ data: { grades: [] } }));
       const existingGrade = (gradesRes.data?.grades || []).find(
-        g => (g.course?._id || g.course) === courseId
+        g => (g.course?._id || g.course)?.toString() === courseId
       );
-
       if (existingGrade) {
         setIsRetake(existingGrade.isRetake === true);
         setSemester(existingGrade.semester || 'Spring');
         setYear(existingGrade.year || new Date().getFullYear());
+        const sg = existingGrade.semesterGrade || {};
+        if (sg.midtermScore != null) { setMidtermScore(String(sg.midtermScore)); setMidtermMaxScore(sg.midtermMaxScore || 40); }
+        if (sg.finalScore   != null) { setFinalScore(String(sg.finalScore));     setFinalMaxScore(sg.finalMaxScore   || 60); setFinalAlreadySet(true); }
+        // Load classwork from grade doc
+        const cw = existingGrade.classwork || [];
+        setClassworkEntries(cw);
+        const scores = {};
+        const editing = {};
+        cw.forEach(e => { scores[e.assignmentId] = e.score != null ? String(e.score) : ''; editing[e.assignmentId] = false; });
+        setClassworkScores(scores);
+        setClassworkEditing(editing);
       }
-
-      if (courseComponents.length === 0) {
-        setComponents([]);
-        setInputMode('manual');
-      } else {
-        setInputMode('components');
-        const existingComps = existingGrade?.components || [];
-        const mapped = courseComponents.map(ac => {
-          const saved = existingComps.find(ec =>
-            (ec.assignmentId && ec.assignmentId === ac.assignmentId?.toString()) ||
-            (ec.name === ac.name && ec.type === ac.type)
-          );
-          const studentScoreObj = ac.studentScores ? ac.studentScores[selectedStudent._id] : null;
-          const resolvedScore = saved?.score != null ? saved.score
-            : (studentScoreObj?.score != null ? studentScoreObj.score : '');
-          const isAlreadyGraded = resolvedScore !== '' && resolvedScore != null;
-          return {
-            assignmentId: ac.assignmentId,
-            name:     ac.name,
-            type:     ac.type,
-            maxScore: ac.maxScore,
-            weight:   ac.weight,
-            score:    resolvedScore !== '' ? String(resolvedScore) : '',
-            isGraded:  isAlreadyGraded,
-            isEditing: false,
-          };
-        });
-        setComponents(mapped);
-      }
-    } catch { setError('Failed to load course components.'); }
-    finally { setLoadingComponents(false); }
+    } catch { setError('Failed to load grade data.'); }
+    finally { setLoadingClasswork(false); }
   };
 
-  const updateScore  = (i, val) => setComponents(p => p.map((c, idx) => idx === i ? { ...c, score: val } : c));
-  const updateWeight = (i, val) => setComponents(p => p.map((c, idx) => idx === i ? { ...c, weight: val } : c));
-  const toggleEdit   = (i)      => setComponents(p => p.map((c, idx) => idx === i ? { ...c, isEditing: !c.isEditing } : c));
-
-  // ── Submit ─────────────────────────────────────────────────────────────────
-  const handleSubmit = async (e) => {
+  // ── Save semester grade ────────────────────────────────────────────────────
+  const handleSaveSemesterGrade = async (e) => {
     e.preventDefault();
-    setError(''); setSuccess(''); setLastGradedCourse(null);
-    if (!selectedStudent || !selectedCourse) { setError('Please select both student and course'); return; }
-
-    if (inputMode === 'components') {
-      const filled = components.filter(c => c.score !== '' && c.score != null);
-      if (!filled.length) { setError('Enter at least one score'); return; }
-      for (const c of filled) {
-        if (Number(c.score) < 0 || Number(c.score) > Number(c.maxScore)) {
-          setError(`Score for "${c.name}" must be between 0 and ${c.maxScore}`); return;
-        }
-        if (!c.weight || Number(c.weight) <= 0) {
-          setError(`Weight for "${c.name}" must be greater than 0`); return;
-        }
-      }
-    }
-
+    setError(''); setSuccess('');
+    if (!selectedStudent || !selectedCourse) { setError('Select student and course first'); return; }
     setLoading(true);
     try {
       let payload = { student: selectedStudent._id, course: selectedCourse, semester, year: parseInt(year) };
-
-      if (inputMode === 'components') {
-        payload.components = components
-          .filter(c => c.score !== '' && c.score != null)
-          .map(c => ({ name: c.name, type: c.type, assignmentId: c.assignmentId, score: Number(c.score), maxScore: Number(c.maxScore), weight: Number(c.weight) }));
-      } else {
+      if (useManualGrade) {
         payload.grade = manualGrade; payload.gradePoint = GRADE_POINTS[manualGrade];
+      } else {
+        if (midtermScore !== '') { payload.midtermScore = Number(midtermScore); payload.midtermMaxScore = Number(midtermMaxScore); }
+        if (finalScore   !== '') { payload.finalScore   = Number(finalScore);   payload.finalMaxScore   = Number(finalMaxScore);   }
       }
-
-      const res = await gradeAPI.addGrade(payload);
-      const gradedCourse = enrolledCourses.find(c => c._id === selectedCourse);
-      const savedGrade   = inputMode === 'components' ? compPreview?.grade : manualGrade;
-      const retakeCapped = res.data?._retakeCapped;
-
-      setSuccess(retakeCapped
-        ? `✅ Retake grade saved! Grade capped at B (max 83).`
-        : `✅ Grade ${savedGrade} saved for ${selectedStudent.firstName} ${selectedStudent.lastName}!`
+      const res = await gradeAPI.saveSemesterGrade(payload);
+      const sg = res.data?.semesterGrade || {};
+      const isNowFinalized = sg.isFinalized;
+      setSuccess(isNowFinalized
+        ? `✅ Final grade saved! ${sg.grade} (${sg.gradePoint?.toFixed(1)}) — CGPA updated.`
+        : `✅ Midterm score saved. CGPA will update when Final Exam is graded.`
       );
-      setLastGradedCourse({ id: selectedCourse, name: gradedCourse?.courseName, status: gradedCourse?.status || 'active' });
-      setGradedCourseIds(prev => new Set([...prev, selectedCourse.toString()]));
-      setComponents(prev => prev.map(c =>
-        c.score !== '' && c.score != null ? { ...c, isGraded: true, isEditing: false } : c
+      if (isNowFinalized) {
+        setFinalAlreadySet(true);
+        setGradedCourseIds(prev => new Set([...prev, selectedCourse.toString()]));
+        const gradedCourse = enrolledCourses.find(c => c._id === selectedCourse);
+        setLastGradedCourse({ id: selectedCourse, name: gradedCourse?.courseName, status: gradedCourse?.status || 'active' });
+      }
+    } catch (err) { setError(err.response?.data?.message || 'Failed to save'); }
+    finally { setLoading(false); }
+  };
+
+  // ── Grade a classwork entry ────────────────────────────────────────────────
+  const handleGradeClasswork = async (assignmentId) => {
+    const scoreVal = classworkScores[assignmentId];
+    if (scoreVal === '' || scoreVal == null) { setError('Enter a score first'); return; }
+    setSavingClasswork(p => ({ ...p, [assignmentId]: true }));
+    setError('');
+    try {
+      await gradeAPI.gradeClasswork(assignmentId, selectedStudent._id, Number(scoreVal));
+      setClassworkEntries(prev => prev.map(e =>
+        e.assignmentId === assignmentId ? { ...e, score: Number(scoreVal), isGraded: true } : e
       ));
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save grade');
-    } finally { setLoading(false); }
+      setClassworkEditing(p => ({ ...p, [assignmentId]: false }));
+      setSuccess('✅ Classwork score saved.');
+    } catch (err) { setError(err.response?.data?.message || 'Failed to save score'); }
+    finally { setSavingClasswork(p => ({ ...p, [assignmentId]: false })); }
   };
 
   const handleMarkEnded = async () => {
@@ -256,13 +241,11 @@ const ManageGrades = () => {
     finally { setEndingCourse(false); }
   };
 
-  const selectedCourseName = selectedCourse ? enrolledCourses.find(c => c._id === selectedCourse)?.courseName : null;
-
   return (
     <div className="manage-grades">
       <div className="manage-grades-header">
         <h1>📊 Manage Student Grades</h1>
-        <p>Components auto-load from posted assignments &amp; exams — no manual entry needed</p>
+        <p>Two sections: <strong>Semester Grades</strong> (Midterm + Final, affects GPA) &amp; <strong>Classwork</strong> (Assignments &amp; Quizzes, raw marks only)</p>
       </div>
 
       {error   && <div className="alert alert-error">{error}</div>}
@@ -283,67 +266,60 @@ const ManageGrades = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grades-form">
-        {/* Student Selection */}
-        <div className="form-section">
-          <h2>👨‍🎓 Student Selection</h2>
-          <div className="form-group">
-            <label>🔍 Search</label>
-            <input type="text" className="search-input" placeholder="Name, student ID, or email…"
-              value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
-            {searchTerm && <small>{filteredStudents.length} student(s) found</small>}
-          </div>
-          <div className="form-group">
-            <label>Select Student *</label>
-            <div className="student-select-row">
-              <select value={selectedStudent?._id || ''} onChange={handleStudentChange} required>
-                <option value="">-- Choose a student --</option>
-                {filteredStudents.map(s => (
-                  <option key={s._id} value={s._id}>{s.studentId} – {s.firstName} {s.lastName}</option>
-                ))}
-              </select>
-              {selectedStudent && (
-                <button type="button" className="btn-view-profile" onClick={() => navigate(`/admin/student/${selectedStudent._id}`)}>👁 Profile</button>
-              )}
-            </div>
-          </div>
-          <div className="form-group">
-            <label>Course (Enrolled Only) *</label>
-            {fetchingCourses ? <div className="loading-courses">⏳ Loading…</div> : (
-              <select value={selectedCourse} onChange={e => handleCourseChange(e.target.value)}
-                required disabled={!selectedStudent || enrolledCourses.length === 0}>
-                <option value="">{!selectedStudent ? '-- Select student first --' : enrolledCourses.length === 0 ? '-- No enrolled courses --' : '-- Choose a course --'}</option>
-                {[...enrolledCourses].sort((a, b) => {
-                  const aG = gradedCourseIds.has(a._id.toString()), bG = gradedCourseIds.has(b._id.toString());
-                  return aG === bG ? 0 : aG ? 1 : -1;
-                }).map(c => {
-                  const isGraded = gradedCourseIds.has(c._id.toString());
-                  return <option key={c._id} value={c._id}>{isGraded ? '✓ [GRADED] ' : ''}{c.courseCode} – {c.courseName}{c.status === 'completed' ? ' [COMPLETED]' : ''}</option>;
-                })}
-              </select>
+      {/* ── Student & Course Selection ── */}
+      <div className="form-section">
+        <h2>👨‍🎓 Student &amp; Course</h2>
+        <div className="form-group">
+          <label>🔍 Search</label>
+          <input type="text" className="search-input" placeholder="Name, student ID, or email…"
+            value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          {searchTerm && <small>{filteredStudents.length} student(s) found</small>}
+        </div>
+        <div className="form-group">
+          <label>Select Student *</label>
+          <div className="student-select-row">
+            <select value={selectedStudent?._id || ''} onChange={handleStudentChange} required>
+              <option value="">-- Choose a student --</option>
+              {filteredStudents.map(s => (
+                <option key={s._id} value={s._id}>{s.studentId} – {s.firstName} {s.lastName}</option>
+              ))}
+            </select>
+            {selectedStudent && (
+              <button type="button" className="btn-view-profile" onClick={() => navigate(`/admin/student/${selectedStudent._id}`)}>👁 Profile</button>
             )}
           </div>
         </div>
+        <div className="form-group">
+          <label>Course (Enrolled Only) *</label>
+          {fetchingCourses ? <div className="loading-courses">⏳ Loading…</div> : (
+            <select value={selectedCourse} onChange={e => handleCourseChange(e.target.value)}
+              required disabled={!selectedStudent || enrolledCourses.length === 0}>
+              <option value="">{!selectedStudent ? '-- Select student first --' : enrolledCourses.length === 0 ? '-- No enrolled courses --' : '-- Choose a course --'}</option>
+              {[...enrolledCourses].sort((a, b) => {
+                const aG = gradedCourseIds.has(a._id.toString()), bG = gradedCourseIds.has(b._id.toString());
+                return aG === bG ? 0 : aG ? 1 : -1;
+              }).map(c => {
+                const isGraded = gradedCourseIds.has(c._id.toString());
+                return <option key={c._id} value={c._id}>{isGraded ? '✓ [GRADED] ' : ''}{c.courseCode} – {c.courseName}{c.status === 'completed' ? ' [COMPLETED]' : ''}</option>;
+              })}
+            </select>
+          )}
+        </div>
+      </div>
 
-        {/* Grade Entry */}
-        {selectedCourse && (
-          <div className="form-section">
-            <h2>📝 Grade Entry</h2>
-
-            {isRetake && (
-              <div style={{ background:'rgba(245,158,11,0.12)', border:'1px solid rgba(245,158,11,0.4)', borderRadius:10, padding:'12px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:10 }}>
-                <span style={{ fontSize:20 }}>⚠️</span>
-                <div>
-                  <strong style={{ color:'#d97706' }}>Retake Student</strong>
-                  <p style={{ fontSize:13, color:'#92400e', margin:'2px 0 0' }}>Previously failed — max grade capped at <strong>83 marks (B)</strong>.</p>
-                </div>
+      {/* ── Tabs ── */}
+      {selectedCourse && (
+        <>
+          {isRetake && (
+            <div style={{ background:'rgba(245,158,11,0.12)', border:'1px solid rgba(245,158,11,0.4)', borderRadius:10, padding:'12px 16px', marginBottom:16, display:'flex', alignItems:'center', gap:10 }}>
+              <span style={{ fontSize:20 }}>⚠️</span>
+              <div>
+                <strong style={{ color:'#d97706' }}>Retake Student</strong>
+                <p style={{ fontSize:13, color:'#92400e', margin:'2px 0 0' }}>Previously failed — semester grade capped at <strong>83 marks (B)</strong>.</p>
               </div>
-            )}
+            </div>
+          )}
 
-            <div className="grade-mode-toggle">
-              <button type="button" className={`mode-btn ${inputMode === 'components' ? 'active' : ''}`} onClick={() => setInputMode('components')}>
-                📊 Exam Components
-              </button>
               <button type="button" className={`mode-btn ${inputMode === 'manual' ? 'active' : ''}`} onClick={() => setInputMode('manual')}>
                 ✏️ Manual Grade
               </button>
