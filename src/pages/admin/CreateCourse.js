@@ -28,7 +28,8 @@ const CreateCourse = () => {
     semester: 'Fall',
     year: 2026,
     scheduleDays: [],
-    scheduleTime: ''
+    scheduleTime: '',
+    hasPractical: false,
   });
 
   const handleChange = (e) => {
@@ -66,6 +67,7 @@ const CreateCourse = () => {
         instructor: formData.instructor,
         semester: formData.semester,
         year: parseInt(formData.year),
+        hasPractical: formData.hasPractical,
         schedule: {
           days: formData.scheduleDays,
           time: formData.scheduleTime
@@ -167,6 +169,20 @@ const CreateCourse = () => {
                 placeholder="e.g., Dr. John Smith"
               />
             </div>
+          </div>
+          <div className="form-group" style={{ marginTop: 8 }}>
+            <label style={{ display:'flex', alignItems:'center', gap:10, cursor:'pointer', userSelect:'none' }}>
+              <input
+                type="checkbox"
+                checked={formData.hasPractical}
+                onChange={e => setFormData({ ...formData, hasPractical: e.target.checked })}
+                style={{ width:18, height:18, cursor:'pointer' }}
+              />
+              <span>🔬 This course has a <strong>Practical Exam</strong> component</span>
+            </label>
+            <small style={{ color:'#64748b', marginTop:4, display:'block', paddingLeft:28 }}>
+              When enabled, a "Practical Exam" slot will appear in the classwork grades for this course.
+            </small>
           </div>
         </div>
 

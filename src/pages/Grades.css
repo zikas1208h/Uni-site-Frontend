@@ -498,6 +498,7 @@ body.dark-mode .score-chip-final .score-chip-val  { color: #c4b5fd; }
 .comp-type-badge[data-type="assignment"] { background: rgba(34,197,94,0.10);  color: #15803d; }
 .comp-type-badge[data-type="midterm"]    { background: rgba(245,158,11,0.12); color: #b45309; }
 .comp-type-badge[data-type="final"]      { background: rgba(139,92,246,0.12); color: #7c3aed; }
+.comp-type-badge[data-type="practical"]  { background: rgba(139,92,246,0.12); color: #7c3aed; }
 
 
 
