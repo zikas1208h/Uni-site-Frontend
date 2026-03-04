@@ -1,13 +1,348 @@
+/* Fonts loaded via <link> in index.html with preconnect for zero render-blocking */
+
+
+:root {
+  /* === ACCENT / BRAND — charcoal/grey palette === */
+  --accent-primary: #374151;
+  --accent-secondary: #4b5563;
+  --accent-gradient: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  --primary-gradient: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  --secondary-gradient: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+  --success-gradient: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  --warning-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --danger-gradient: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+
+  /* === LIGHT MODE === */
+  --bg-body: #f3f4f6;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --border-color: #e5e7eb;
+  --text-primary: #141414;
+  --text-secondary: #4b5563;
+  --text-tertiary: #9ca3af;
+  --hover-bg: #f3f4f6;
+  --input-bg: #f9fafb;
+
+  /* === GLASS === */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.5);
+
+  /* === SHADOWS === */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(0, 0, 0, 0.08);
+
+  /* === TRANSITIONS === */
+  --transition-base: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* === RADII === */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 24px;
+}
+
+/* =========================================================
+   DARK MODE — deep black & grey
+   ========================================================= */
+body.dark-mode {
+  --bg-body: #0a0a0a;
+  --bg-primary: #111111;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #222222;
+  --card-bg: #141414;
+  --card-border: #2a2a2a;
+  --border-color: #2a2a2a;
+  --text-primary: #f5f5f5;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #6b7280;
+  --hover-bg: #222222;
+  --input-bg: #111111;
+  --glass-bg: rgba(17, 17, 17, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.7);
+  --shadow-xl: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent; /* Remove tap flash on mobile */
+}
+
+html {
+  scroll-behavior: smooth;
+  width: 100%;
+  overflow-x: hidden;
+  /* Prevent font size inflation on iOS */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  padding: 0;
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-body, #f3f4f6);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+  /* Enable momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Touch-friendly inputs — no zoom on iOS (font-size ≥16px prevents zoom) */
+@media (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+  button { touch-action: manipulation; }
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: none;
+  pointer-events: none;
+  z-index: 0;
+}
+
+body.dark-mode::before {
+  background: none;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+/* Global Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary, #f9fafb);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+body.dark-mode ::-webkit-scrollbar-track {
+  background: #111111;
+}
+body.dark-mode ::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+}
+body.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #374151;
+}
+
+/* ══════════════════════════════════════════
+   SHARED GRADE BADGE — used on Dashboard & Grades pages
+   ══════════════════════════════════════════ */
+.grade-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 25px;
+  font-weight: 800;
+  font-size: 14px;
+  text-align: center;
+  min-width: 56px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: default;
+}
+
+/* ── Light mode ── */
+.grade-badge.grade-a-plus,
+.grade-badge.grade-a {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  color: #155724;
+  border: 2px solid #b1dfbb;
+}
+.grade-badge.grade-a-minus {
+  background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+  color: #0c5460;
+  border: 2px solid #abdde5;
+}
+.grade-badge.grade-b-plus {
+  background: linear-gradient(135deg, #cfe2ff 0%, #b6d4fe 100%);
+  color: #084298;
+  border: 2px solid #9ec5fe;
+}
+.grade-badge.grade-b {
+  background: linear-gradient(135deg, #e7f1ff 0%, #cfe2ff 100%);
+  color: #084298;
+  border: 2px solid #b6d4fe;
+}
+.grade-badge.grade-b-minus {
+  background: linear-gradient(135deg, #e7f3ff 0%, #d0e7ff 100%);
+  color: #0a58ca;
+  border: 2px solid #b8daff;
+}
+.grade-badge.grade-c-plus,
+.grade-badge.grade-c {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+  color: #856404;
+  border: 2px solid #ffd966;
+}
+.grade-badge.grade-c-minus {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  color: #856404;
+  border: 2px solid #fab005;
+}
+.grade-badge.grade-d-plus,
+.grade-badge.grade-d,
+.grade-badge.grade-d-minus {
+  background: linear-gradient(135deg, #f8d7da 0%, #f1aeb5 100%);
+  color: #721c24;
+  border: 2px solid #ea868f;
+}
+.grade-badge.grade-f {
+  background: linear-gradient(135deg, #f5c6cb 0%, #dc3545 100%);
+  color: #fff;
+  border: 2px solid #dc3545;
+  font-weight: 900;
+}
+
+/* ── Dark mode overrides — rich saturated colours on dark bg ── */
+body.dark-mode .grade-badge.grade-a-plus,
+body.dark-mode .grade-badge.grade-a {
+  background: linear-gradient(135deg, #166534 0%, #15803d 100%);
+  color: #bbf7d0;
+  border: 2px solid #22c55e;
+}
+body.dark-mode .grade-badge.grade-a-minus {
+  background: linear-gradient(135deg, #155e75 0%, #0e7490 100%);
+  color: #a5f3fc;
+  border: 2px solid #22d3ee;
+}
+body.dark-mode .grade-badge.grade-b-plus {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+  color: #bfdbfe;
+  border: 2px solid #60a5fa;
+}
+body.dark-mode .grade-badge.grade-b {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: #dbeafe;
+  border: 2px solid #93c5fd;
+}
+body.dark-mode .grade-badge.grade-b-minus {
+  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+  color: #eff6ff;
+  border: 2px solid #93c5fd;
+}
+body.dark-mode .grade-badge.grade-c-plus,
+body.dark-mode .grade-badge.grade-c {
+  background: linear-gradient(135deg, #854d0e 0%, #a16207 100%);
+  color: #fef08a;
+  border: 2px solid #eab308;
+}
+body.dark-mode .grade-badge.grade-c-minus {
+  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
+  color: #fed7aa;
+  border: 2px solid #f97316;
+}
+body.dark-mode .grade-badge.grade-d-plus,
+body.dark-mode .grade-badge.grade-d,
+body.dark-mode .grade-badge.grade-d-minus {
+  background: linear-gradient(135deg, #9a3412 0%, #c2410c 100%);
+  color: #ffedd5;
+  border: 2px solid #f97316;
+}
+body.dark-mode .grade-badge.grade-f {
+  background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+  color: #fecaca;
+  border: 2px solid #ef4444;
+  font-weight: 900;
+}
+
+/* ── RTL / Arabic support (Cairo font loaded in @import above) ───────────── */
+
+body.rtl {
+  direction: rtl;
+  font-family: 'Cairo', 'Segoe UI', 'Arial', sans-serif;
+  text-align: right;
+}
+body.rtl * {
+  font-family: 'Cairo', 'Segoe UI', 'Arial', sans-serif;
+}
+/* Flip flex-row layouts for RTL */
+body.rtl .navbar-container,
+body.rtl .navbar-links,
+body.rtl .navbar-right,
+body.rtl .adash-header,
+body.rtl .adash-header-actions,
+body.rtl .adash-kpi-grid,
+body.rtl .adash-actions-grid,
+body.rtl .adash-bottom-grid,
+body.rtl .adash-card-header,
+body.rtl .adash-list-item,
+body.rtl .report-modal-header,
+body.rtl .report-options,
+body.rtl .report-modal-footer,
+body.rtl .report-preview,
+body.rtl .import-preview-header,
+body.rtl .import-type-select-row,
+body.rtl .import-actions,
+body.rtl .import-result-kpis,
+body.rtl .import-detail-kv,
+body.rtl .sp-top-bar {
+  direction: rtl;
+}
+/* Fix left-side margins/padding that become right in RTL */
+body.rtl .adash-item-info,
+body.rtl .adash-item-badge,
+body.rtl .adash-status-chip { margin-left: 0; margin-right: auto; }
+body.rtl .more-menu { left: auto; right: 0; }
+body.rtl .adash-section-title::after { left: auto; right: 0; }
+/* Cards */
+body.rtl .adash-kpi { flex-direction: row-reverse; text-align: right; }
+body.rtl .adash-list-item { flex-direction: row-reverse; }
+body.rtl .adash-item-avatar { margin-right: 0; margin-left: 14px; }
+/* Import PDF page */
+body.rtl .import-dropzone,
+body.rtl .import-preview-text pre { text-align: right; direction: rtl; }
+body.rtl .import-type-card { align-items: flex-end; }
+/* PDF header nav badge */
+body.rtl .role-badge { margin-left: 0; margin-right: 6px; }

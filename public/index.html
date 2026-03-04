@@ -3,41 +3,64 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Web site created using create-react-app"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="description" content="HNU Portal - Access your courses, materials, and grades" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.jpg" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
-    <title>React App</title>
+    <!-- ── Speed: pre-warm the backend before JS even loads ── -->
+    <link rel="preconnect" href="https://uni-site-20-production-81f6.up.railway.app" crossorigin />
+    <link rel="dns-prefetch" href="https://uni-site-20-production-81f6.up.railway.app" />
+
+    <!-- ── Fonts: preconnect first, then non-blocking load ── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Load only weights actually used: 400/600/700/800 to reduce download size -->
+    <link rel="preload" as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Cairo:wght@400;600;700;800&display=swap" />
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Cairo:wght@400;600;700;800&display=swap"
+      media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Cairo:wght@400;600;700;800&display=swap" />
+    </noscript>
+
+    <title>HNU Portal</title>
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{background:#0f1117;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+      #root:empty::before{
+        content:'';display:block;width:48px;height:48px;margin:45vh auto 0;
+        border:4px solid #1e2333;border-top-color:#6366f1;
+        border-radius:50%;animation:spin .7s linear infinite;
+      }
+      @keyframes spin{to{transform:rotate(360deg)}}
+    </style>
+
+    <!-- ── Pre-warm the API immediately — fires before React JS even parses ── -->
+    <script>
+      (function(){
+        var api = 'https://uni-site-20-production-81f6.up.railway.app';
+        var token = localStorage.getItem('token');
+        // Wake the serverless function + DB connection
+        fetch(api + '/health', { method: 'GET', cache: 'no-store' }).catch(function(){});
+        // If logged in, also pre-warm /api/auth/me so it's ready when React asks
+        if (token) {
+          fetch(api + '/api/auth/me', {
+            headers: { 'Authorization': 'Bearer ' + token },
+            cache: 'no-store'
+          }).catch(function(){});
+        }
+      })();
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>

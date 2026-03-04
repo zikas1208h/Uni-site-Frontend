@@ -1,0 +1,69 @@
+
+> frontend@0.1.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Compiled successfully.
+
+File sizes after gzip:
+
+  128.08 kB  build\static\js\389.47b9b298.chunk.js
+  127.76 kB  build\static\js\main.5c34bcec.js
+  46.35 kB   build\static\js\239.e39fb35b.chunk.js
+  42.9 kB    build\static\js\455.3bd9a0d7.chunk.js
+  9.7 kB     build\static\js\857.c9fa6b4d.chunk.js
+  8.69 kB    build\static\js\977.240addac.chunk.js
+  6.97 kB    build\static\css\main.a13b9b8d.css
+  6.75 kB    build\static\js\536.e2747bdc.chunk.js
+  6.48 kB    build\static\js\49.15a49612.chunk.js
+  5.75 kB    build\static\js\646.c6ac7ade.chunk.js
+  5.56 kB    build\static\js\739.04d61eef.chunk.js
+  4.57 kB    build\static\js\440.de38ba5c.chunk.js
+  3.87 kB    build\static\js\37.b762ad3a.chunk.js
+  3.81 kB    build\static\js\858.218222a9.chunk.js
+  3.8 kB     build\static\css\739.81d8fbcd.chunk.css
+  3.68 kB    build\static\css\646.6509f0e9.chunk.css
+  3.66 kB    build\static\css\49.2b21fcad.chunk.css
+  3.05 kB    build\static\css\536.7b7d6105.chunk.css
+  3.01 kB    build\static\js\504.b2f3f021.chunk.js
+  3 kB       build\static\css\418.6c51f65b.chunk.css
+  2.76 kB    build\static\js\404.4574f6f9.chunk.js
+  2.64 kB    build\static\js\385.d863d895.chunk.js
+  2.5 kB     build\static\js\167.f1220533.chunk.js
+  2.47 kB    build\static\css\37.c447ff50.chunk.css
+  2.16 kB    build\static\css\191.927d12ef.chunk.css
+  2.07 kB    build\static\css\504.64991274.chunk.css
+  2.03 kB    build\static\js\771.9c728173.chunk.js
+  2.03 kB    build\static\js\70.acfcbc16.chunk.js
+  2.01 kB    build\static\css\440.81dfdb34.chunk.css
+  2.01 kB    build\static\js\683.c7d795be.chunk.js
+  1.99 kB    build\static\css\404.444b3b89.chunk.css
+  1.97 kB    build\static\css\167.b256f16e.chunk.css
+  1.97 kB    build\static\css\385.e2f0d42f.chunk.css
+  1.87 kB    build\static\css\858.487f76ef.chunk.css
+  1.85 kB    build\static\js\191.ab5f0ca8.chunk.js
+  1.76 kB    build\static\js\418.959a54ac.chunk.js
+  1.68 kB    build\static\css\897.f3eba3ea.chunk.css
+  1.61 kB    build\static\js\107.e671a006.chunk.js
+  1.54 kB    build\static\css\683.3a528623.chunk.css
+  1.53 kB    build\static\js\356.af85728e.chunk.js
+  1.48 kB    build\static\css\771.8f62125e.chunk.css
+  1.42 kB    build\static\css\70.f5866d94.chunk.css
+  1.37 kB    build\static\css\107.a8b7a303.chunk.css
+  1.36 kB    build\static\css\356.42eaffa0.chunk.css
+  853 B      build\static\js\897.fdc96b41.chunk.js
+  80 B       build\static\js\222.f9f2b1f4.chunk.js
+
+The project was built assuming it is hosted at /.
+You can control this with the homepage field in your package.json.
+
+The build folder is ready to be deployed.
+You may serve it with a static server:
+
+  npm install -g serve
+  serve -s build
+
+Find out more about deployment here:
+
+  https://cra.link/deployment
+

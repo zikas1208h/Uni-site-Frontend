@@ -1,0 +1,21 @@
+/* Fallback styling if logo image is missing */
+.navbar-logo-img:not([src]),
+.navbar-logo-img[src=""],
+.login-logo-img:not([src]),
+.login-logo-img[src=""],
+.register-logo-img:not([src]),
+.register-logo-img[src=""] {
+  display: none;
+}
+
+/* Show fallback emoji if image fails to load */
+.navbar-logo::before {
+  content: '🎓';
+  font-size: 32px;
+  margin-right: 8px;
+}
+
+.navbar-logo img + span::before {
+  content: none;
+}
+

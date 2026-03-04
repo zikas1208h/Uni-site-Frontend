@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HNU Portal — Full System Documentation</title>
+<style>
+  /* ── RESET ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── FONTS ── */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  body {
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #1e293b;
+    background: #f8fafc;
+  }
+
+  /* ── PAGE WRAPPER ── */
+  .doc {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 48px;
+    background: #fff;
+    box-shadow: 0 4px 32px #00000012;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    text-align: center;
+    padding: 60px 0 50px;
+    border-bottom: 3px solid #6366f1;
+    margin-bottom: 48px;
+  }
+  .cover .logo { font-size: 52px; margin-bottom: 16px; }
+  .cover h1 { font-size: 32px; font-weight: 900; color: #1e293b; letter-spacing: -0.5px; }
+  .cover .subtitle { font-size: 17px; color: #6366f1; font-weight: 600; margin-top: 8px; }
+  .cover .meta { margin-top: 24px; color: #64748b; font-size: 13px; }
+  .cover .meta span { display: inline-block; margin: 0 12px; }
+
+  /* ── TOC ── */
+  .toc { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px 28px; margin-bottom: 40px; }
+  .toc h2 { font-size: 15px; font-weight: 800; color: #1e293b; margin-bottom: 16px; letter-spacing: 0.3px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 5px 0; color: #475569; font-size: 13px; }
+  .toc .toc-section { font-weight: 700; color: #1e293b; }
+  .toc .toc-sub { font-weight: 400; color: #64748b; margin-left: 8px; }
+
+  /* ── SECTION HEADINGS ── */
+  .section-header {
+    display: flex; align-items: center; gap: 14px;
+    margin: 48px 0 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .section-header .icon { font-size: 28px; }
+  .section-header h2 { font-size: 22px; font-weight: 900; color: #1e293b; }
+  .section-header .role-badge {
+    margin-left: auto; padding: 4px 14px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .badge-admin    { background: #6366f115; color: #6366f1; border: 1px solid #6366f140; }
+  .badge-student  { background: #22c55e15; color: #16a34a; border: 1px solid #22c55e40; }
+  .badge-staff    { background: #f59e0b15; color: #d97706; border: 1px solid #f59e0b40; }
+  .badge-all      { background: #94a3b815; color: #475569; border: 1px solid #94a3b840; }
+  .badge-super    { background: #ef444415; color: #dc2626; border: 1px solid #ef444440; }
+
+  /* ── FEATURE CARD ── */
+  .feature {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .feature-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .feature-header .ficon { font-size: 18px; }
+  .feature-header h3 { font-size: 14px; font-weight: 800; color: #1e293b; flex: 1; }
+  .feature-body { padding: 14px 18px; }
+  .feature-body p { color: #475569; margin-bottom: 8px; font-size: 13px; }
+  .feature-body p:last-child { margin-bottom: 0; }
+
+  /* ── SUB-FEATURE LIST ── */
+  .sub-list { list-style: none; padding: 0; margin: 8px 0; }
+  .sub-list li {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; color: #334155;
+  }
+  .sub-list li:last-child { border-bottom: none; }
+  .sub-list li::before { content: '▸'; color: #6366f1; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── LOGIC BOX ── */
+  .logic {
+    background: #0f172a; color: #e2e8f0;
+    border-radius: 8px; padding: 14px 16px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 11.5px; line-height: 1.7;
+    margin: 10px 0;
+  }
+  .logic .comment { color: #64748b; }
+  .logic .key     { color: #818cf8; }
+  .logic .val     { color: #34d399; }
+  .logic .str     { color: #fbbf24; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow {
+    display: flex; align-items: center; flex-wrap: wrap; gap: 0;
+    margin: 12px 0; padding: 14px 18px;
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+  }
+  .flow-step {
+    background: #6366f1; color: #fff;
+    padding: 7px 14px; border-radius: 6px;
+    font-size: 12px; font-weight: 700;
+  }
+  .flow-step.green { background: #22c55e; }
+  .flow-step.orange{ background: #f59e0b; }
+  .flow-step.red   { background: #ef4444; }
+  .flow-step.gray  { background: #64748b; }
+  .flow-arrow { color: #94a3b8; font-size: 16px; margin: 0 8px; }
+
+  /* ── ROLES TABLE ── */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12.5px; }
+  th { background: #1e293b; color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; }
+  td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  td .check { color: #22c55e; font-weight: 700; }
+  td .cross  { color: #ef4444; font-weight: 700; }
+
+  /* ── CALLOUT ── */
+  .callout {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 16px; border-radius: 8px; margin: 10px 0;
+    font-size: 12.5px;
+  }
+  .callout.info  { background: #6366f110; border: 1px solid #6366f140; color: #4f46e5; }
+  .callout.warn  { background: #f59e0b10; border: 1px solid #f59e0b40; color: #92400e; }
+  .callout.success{ background: #22c55e10; border: 1px solid #22c55e40; color: #166534; }
+  .callout .cicon { font-size: 18px; flex-shrink: 0; }
+  .callout p { margin: 0; line-height: 1.5; }
+
+  /* ── PAGE BREAKS ── */
+  .page-break { page-break-before: always; }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    body { background: #fff; font-size: 11.5px; }
+    .doc { max-width: 100%; padding: 20px 28px; box-shadow: none; }
+    .cover { padding: 40px 0 30px; }
+    .cover h1 { font-size: 26px; }
+    .no-print { display: none !important; }
+    .feature { break-inside: avoid; }
+    .page-break { page-break-before: always; }
+    .section-header { break-after: avoid; }
+    a { text-decoration: none; color: inherit; }
+    @page {
+      size: A4;
+      margin: 18mm 15mm;
+    }
+  }
+
+  /* ── PRINT BUTTON ── */
+  .print-bar {
+    position: fixed; bottom: 24px; right: 24px;
+    display: flex; gap: 10px; z-index: 999;
+  }
+  .print-btn {
+    background: #6366f1; color: #fff; border: none;
+    padding: 12px 22px; border-radius: 10px; font-size: 14px;
+    font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px #6366f140;
+    font-family: inherit;
+  }
+  .print-btn:hover { background: #4f46e5; }
+  .print-btn.secondary { background: #1e293b; box-shadow: 0 4px 14px #00000020; }
+</style>
+</head>
+<body>
+
+<!-- PRINT BUTTON -->
+<div class="print-bar no-print">
+  <button class="print-btn secondary" onclick="window.location.href='/'">← Back</button>
+  <button class="print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+</div>
+
+<div class="doc">
+
+  <!-- ══════════════════════════════════════════════════
+       COVER PAGE
+  ══════════════════════════════════════════════════ -->
+  <div class="cover">
+    <div class="logo">🎓</div>
+    <h1>HNU University Portal</h1>
+    <div class="subtitle">Complete System Feature Documentation</div>
+    <div class="meta">
+      <span>📅 March 2026</span>
+      <span>🏫 Faculty of Computers &amp; Information</span>
+      <span>📄 System Presentation Guide</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       TABLE OF CONTENTS
+  ══════════════════════════════════════════════════ -->
+  <div class="toc">
+    <h2>📋 Table of Contents</h2>
+    <ol>
+      <li><span class="toc-section">System Overview &amp; Architecture</span></li>
+      <li><span class="toc-section">User Roles &amp; Permissions</span></li>
+      <li><span class="toc-section">Authentication</span> <span class="toc-sub">Login · Register · Password Management</span></li>
+      <li><span class="toc-section">Student Features</span> <span class="toc-sub">Dashboard · Courses · Grades · Schedule · Assignments · Materials · Profile</span></li>
+      <li><span class="toc-section">Doctor &amp; Assistant Features</span> <span class="toc-sub">Personal Schedule · Grades · Materials · Assignments</span></li>
+      <li><span class="toc-section">Admin Features</span> <span class="toc-sub">Students · Courses · Staff · Registration Periods · Grades · Import PDF</span></li>
+      <li><span class="toc-section">Schedule System</span> <span class="toc-sub">Config · Generator Algorithm · Master Schedule · Group Schedule · Venue Availability</span></li>
+      <li><span class="toc-section">Super Admin Features</span> <span class="toc-sub">Full Control · Delete Schedule · Force Schedules · Staff Push</span></li>
+      <li><span class="toc-section">Technical Architecture</span> <span class="toc-sub">Stack · Database · API · Security</span></li>
+    </ol>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       1. SYSTEM OVERVIEW
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header">
+    <span class="icon">🏗️</span>
+    <h2>1. System Overview &amp; Architecture</h2>
+    <span class="role-badge badge-all">All Users</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header">
+      <span class="ficon">⚙️</span>
+      <h3>Technology Stack</h3>
+    </div>
+    <div class="feature-body">
+      <table>
+        <tr><th>Layer</th><th>Technology</th><th>Purpose</th></tr>
+        <tr><td><strong>Frontend</strong></td><td>React 18 + CSS Modules</td><td>Single-page application, dynamic UI</td></tr>
+        <tr><td><strong>Backend</strong></td><td>Node.js + Express.js</td><td>REST API, business logic, auth</td></tr>
+        <tr><td><strong>Database</strong></td><td>MongoDB + Mongoose</td><td>Persistent data, schemas, indexing</td></tr>
+        <tr><td><strong>Auth</strong></td><td>JWT (JSON Web Tokens)</td><td>Stateless session management</td></tr>
+        <tr><td><strong>File Storage</strong></td><td>Multer + disk/cloud</td><td>PDFs, profile pictures, materials</td></tr>
+        <tr><td><strong>Hosting</strong></td><td>Vercel (frontend) + Railway (backend)</td><td>Production deployment</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header">
+      <span class="ficon">🔄</span>
+      <h3>Request Flow</h3>
+    </div>
+    <div class="feature-body">
+      <div class="flow">
+        <div class="flow-step">Browser (React)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step gray">JWT Token Injected</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">Express API /api/*</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step orange">Auth Middleware</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step green">Controller</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">MongoDB</div>
+      </div>
+      <p>Every API request passes through the <strong>auth middleware</strong> which decodes the JWT, attaches <code>req.userId</code> and <code>req.user</code>, then checks role permissions before executing the controller logic.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       2. USER ROLES
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">👥</span>
+    <h2>2. User Roles &amp; Permissions</h2>
+    <span class="role-badge badge-all">All Roles</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🔐</span><h3>Role Hierarchy</h3></div>
+    <div class="feature-body">
+      <table>
+        <tr><th>Role</th><th>Manage Students</th><th>Manage Courses</th><th>Upload Materials</th><th>Grade Students</th><th>Manage Staff</th><th>Generate Schedule</th><th>Delete Schedule</th></tr>
+        <tr><td><strong>Super Admin</strong></td><td><span class="check">✔ Full</span></td><td><span class="check">✔ Full</span></td><td><span class="check">✔</span></td><td><span class="check">✔</span></td><td><span class="check">✔</span></td><td><span class="check">✔</span></td><td><span class="check">✔</span></td></tr>
+        <tr><td><strong>Admin</strong></td><td><span class="check">✔</span></td><td><span class="check">✔</span></td><td><span class="check">✔</span></td><td><span class="check">✔</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+        <tr><td><strong>Doctor</strong></td><td><span class="check">✔ Own courses</span></td><td><span class="cross">✗</span></td><td><span class="check">✔ Own</span></td><td><span class="check">✔ Own</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+        <tr><td><strong>Assistant</strong></td><td><span class="check">✔ Own courses</span></td><td><span class="cross">✗</span></td><td><span class="check">✔ Own</span></td><td><span class="check">✔ Own</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+        <tr><td><strong>Student</strong></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td><td><span class="cross">✗</span></td></tr>
+      </table>
+      <div class="callout info">
+        <span class="cicon">ℹ️</span>
+        <p>Roles are stored in the <code>User.role</code> field in MongoDB. Every protected route checks <code>req.user.role</code> before proceeding. Super Admin is identified separately via <code>isSuperAdmin()</code> which checks a special flag or email.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       3. AUTHENTICATION
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">🔑</span>
+    <h2>3. Authentication</h2>
+    <span class="role-badge badge-all">All Users</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🔓</span><h3>Login</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>User enters email + password on the Login page</li>
+        <li>Frontend calls <code>POST /api/auth/login</code> with credentials</li>
+        <li>Backend looks up user by email, compares bcrypt-hashed password</li>
+        <li>On success: generates a signed JWT with <code>userId</code> and <code>role</code> payload, returns it to the frontend</li>
+        <li>Frontend stores the token in <code>localStorage</code> and injects it into every subsequent request via Axios interceptor</li>
+        <li>User is redirected to their role-specific dashboard automatically</li>
+      </ul>
+      <div class="logic">
+        <span class="comment">// Auth flow (simplified)</span><br/>
+        <span class="key">POST</span> <span class="str">/api/auth/login</span> → bcrypt.compare(pw, hash)<br/>
+        → jwt.sign(<span class="val">{ userId, role }</span>, SECRET, <span class="val">{ expiresIn: '7d' }</span>)<br/>
+        → localStorage.setItem(<span class="str">'token'</span>, jwt)<br/>
+        → axios.interceptors: <span class="val">Authorization: Bearer &lt;token&gt;</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🔒</span><h3>Password Management</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><strong>Change Password (Student/Staff):</strong> <code>POST /api/students/profile/change-password</code> — requires current password verification before hashing and saving the new one</li>
+        <li><strong>Admin Reset:</strong> <code>POST /api/students/:id/reset-password</code> — admin can set any student's password directly (no current password required)</li>
+        <li>All passwords are hashed with bcrypt (salt rounds: 10) before storage — never stored in plain text</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       4. STUDENT FEATURES
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">🎒</span>
+    <h2>4. Student Features</h2>
+    <span class="role-badge badge-student">Student</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🏠</span><h3>Student Dashboard</h3></div>
+    <div class="feature-body">
+      <p>The dashboard is the first page a student sees after login. It aggregates data from multiple APIs in a single view.</p>
+      <ul class="sub-list">
+        <li>Shows student name, student ID, academic year, semester, lecture group and section number</li>
+        <li>Displays current GPA calculated from all graded courses</li>
+        <li>Shows enrolled course count, completed assignments count, and pending assignments</li>
+        <li>Quick links to Schedule, Courses, Grades, and Assignments</li>
+        <li>Recent notifications panel (assignment posted, grade released)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📚</span><h3>Course Registration &amp; Enrollment</h3></div>
+    <div class="feature-body">
+      <p>Students can browse and register for courses during active registration periods only.</p>
+      <ul class="sub-list">
+        <li>Call <code>GET /api/courses</code> to list all available courses filtered by the student's academic year</li>
+        <li>Admin opens a Registration Period (<code>POST /api/registration</code>) with start/end date and an allowed course list</li>
+        <li>Frontend checks <code>GET /api/registration/active</code> — if no active period, the Enroll button is disabled</li>
+        <li>Student clicks Enroll → <code>POST /api/courses/:id/enroll</code> → backend validates credit hour limits, period validity, and adds the course to <code>User.enrolledCourses[]</code></li>
+        <li>Credit hour eligibility check: <code>GET /api/courses/eligibility/credit-hours</code> ensures the student does not exceed the maximum allowed credit hours per semester</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📊</span><h3>Grades &amp; GPA</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><code>GET /api/grades/student</code> — returns all grades for the logged-in student</li>
+        <li><code>GET /api/grades/gpa</code> — calculates weighted GPA from all graded courses and returns it</li>
+        <li>Each grade record includes: course code, course name, marks, grade letter (A+/A/B+…), and semester</li>
+        <li>GPA is calculated as: <code>Σ(grade_points × credit_hours) / Σ(credit_hours)</code></li>
+        <li>Grade distribution chart shows visual breakdown of grade letters across all courses</li>
+      </ul>
+      <div class="logic">
+        <span class="comment">// GPA calculation logic</span><br/>
+        <span class="key">gradePoints</span> = { A+: <span class="val">4.0</span>, A: <span class="val">3.7</span>, B+: <span class="val">3.3</span>, B: <span class="val">3.0</span>, ... }<br/>
+        <span class="key">GPA</span> = Σ(points × creditHours) / Σ(creditHours)
+      </div>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📅</span><h3>Personal Schedule</h3></div>
+    <div class="feature-body">
+      <p>Each student's schedule is a filtered view of the master schedule based on their lecture group and section.</p>
+      <ul class="sub-list">
+        <li>Student calls <code>POST /api/schedule/generate/me</code> or admin force-pushes it</li>
+        <li>Backend reads the master schedule, filters slots where <code>slot.group === student.lectureGroup</code> for lectures and <code>slot.group === student.lectureGroup AND slot.section === student.section</code> for sections</li>
+        <li>Result is saved as a <code>Schedule</code> document linked to the student</li>
+        <li>View shows week-grid and list views, togglable</li>
+        <li>Each slot shows: course name/code, type (Lecture/Section), <strong>Group number</strong>, <strong>Section number</strong>, venue, staff name</li>
+        <li>Days shown: Sunday through Thursday + Saturday (6 working days)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📝</span><h3>Assignments &amp; Submissions</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><code>GET /api/assignments/my</code> — returns all assignments for courses the student is enrolled in</li>
+        <li>Each assignment shows: title, course, due date, description, attached file (if any)</li>
+        <li>Student submits via <code>POST /api/submissions</code> with a file upload (PDF/Word/etc.)</li>
+        <li>After submission, student can view their submitted file and any feedback/grade from the doctor</li>
+        <li>Overdue assignments are flagged with a red indicator</li>
+        <li>Submission downloads: <code>GET /api/submissions/download/:id</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📖</span><h3>Course Materials</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><code>GET /api/materials/my-materials</code> — returns all materials for enrolled courses</li>
+        <li>Materials include: lecture notes, PDFs, slides, references — uploaded by doctors/assistants</li>
+        <li>Filtered by course; student only sees materials for their enrolled courses</li>
+        <li>Download any material via <code>GET /api/materials/:id</code></li>
+        <li>Material cards show: title, course, upload date, file type icon</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">👤</span><h3>Student Profile</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>View and edit: first name, last name, email, major, department</li>
+        <li>Upload profile picture: <code>POST /api/students/profile/picture</code> (multipart upload)</li>
+        <li>Change password with current-password verification</li>
+        <li>View academic info: student ID, year, semester, group, section (read-only — set by admin)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       5. DOCTOR & ASSISTANT FEATURES
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">👨‍🏫</span>
+    <h2>5. Doctor &amp; Assistant Features</h2>
+    <span class="role-badge badge-staff">Doctor / Assistant</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🗓️</span><h3>Personal Teaching Schedule (Auto-loaded)</h3></div>
+    <div class="feature-body">
+      <p>When a doctor or assistant opens the Schedule page, it <strong>automatically opens on their personal "My Schedule" tab</strong> — no navigation required.</p>
+      <ul class="sub-list">
+        <li>Calls <code>GET /api/schedule/staff/me</code> — backend reads the most recent master schedule and filters all slots where <code>slot.staffId === req.userId</code></li>
+        <li>Returns only <em>their</em> lectures or sections — not the full timetable</li>
+        <li>Displayed in week-grid view across all 6 working days (Sun–Sat)</li>
+        <li>Each slot shows: course code/name, type, <strong>Group X</strong>, <strong>Section Y</strong> (for sections), venue and time</li>
+        <li>Refresh button to reload if the master schedule was regenerated</li>
+        <li>Doctor sees all 3 groups' lectures (e.g. Groups 1–3 or 4–6 per course)</li>
+        <li>Assistant sees all 12 group×section slots they are assigned to</li>
+      </ul>
+      <div class="flow">
+        <div class="flow-step gray">Staff Opens Schedule</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">GET /schedule/staff/me</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step orange">Filter by staffId</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step green">Personal Week View</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🎓</span><h3>Grade Management</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Doctor/assistant can only grade students in <strong>their assigned courses</strong> (verified server-side)</li>
+        <li><code>POST /api/grades</code> — create a grade record with: studentId, courseId, marks, grade letter</li>
+        <li><code>GET /api/grades/statistics/my-courses</code> — shows grade distribution charts for their courses</li>
+        <li><code>GET /api/grades/course/:id</code> — full grade sheet for a specific course</li>
+        <li>Grades are immediately visible to the student once saved</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📤</span><h3>Upload Course Materials</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><code>POST /api/materials</code> — multipart upload of any file (PDF, DOCX, PPTX, etc.)</li>
+        <li>Must specify the course the material belongs to; system verifies the staff member is assigned to that course</li>
+        <li>Material is immediately available to all enrolled students</li>
+        <li>Can edit title/description or delete material: <code>PUT/DELETE /api/materials/:id</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📋</span><h3>Assignment Management</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Create assignment: <code>POST /api/assignments</code> with title, description, due date, course, optional file</li>
+        <li>View all submissions for an assignment: <code>GET /api/submissions/assignment/:id</code></li>
+        <li>Grade a submission and leave feedback: <code>PATCH /api/submissions/:id/feedback</code></li>
+        <li>Edit or delete assignments they created</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       6. ADMIN FEATURES
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">🛠️</span>
+    <h2>6. Admin Features</h2>
+    <span class="role-badge badge-admin">Admin</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">👨‍🎓</span><h3>Student Management</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><code>GET /api/students</code> — list all students with search, filter by year/semester/group</li>
+        <li>View full student profile: enrolled courses, grades, group &amp; section assignment</li>
+        <li>Edit student academic info: set <code>lectureGroup</code> (1–6) and <code>section</code> (1 or 2) — critical for schedule generation</li>
+        <li>Manually add/remove courses from a student's enrollment</li>
+        <li>Reset student password: <code>POST /api/students/:id/reset-password</code></li>
+        <li>Import students in bulk via PDF upload (parsed with a PDF extraction engine)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📚</span><h3>Course Management</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Create courses with: code, name, credit hours, year, semester, description</li>
+        <li>Set course status: <strong>active</strong> (included in schedule generation) or <strong>inactive</strong></li>
+        <li>Assign doctors and assistants to courses for schedule generation (stored as <code>scheduleDoctors[]</code> and <code>scheduleAssistants[]</code>)</li>
+        <li>Delete courses (only if no students enrolled)</li>
+        <li>Filter courses by year, semester, status</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">👨‍💼</span><h3>Staff Management</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Create doctor/assistant accounts: <code>POST /api/auth/staff</code> — sets role, assigns initial courses</li>
+        <li>Edit staff info (name, email, role, assigned courses)</li>
+        <li>Remove staff account</li>
+        <li>Semester reset: clears all staff slot assignments so a new semester can be configured</li>
+        <li>Staff accounts can log in immediately and see their schedule once generated</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🗓️</span><h3>Registration Period Management</h3></div>
+    <div class="feature-body">
+      <p>Controls when students are allowed to enroll in courses.</p>
+      <ul class="sub-list">
+        <li>Create a period with: name, start date, end date, academic year, semester, and a list of allowed courses</li>
+        <li>Toggle active/inactive: only one period can be active at a time</li>
+        <li>When a period is active, enrolled students can register for the listed courses</li>
+        <li>When inactive or expired, the Enroll buttons are hidden from students</li>
+        <li><code>GET /api/registration/active</code> — frontend checks this on every course listing page</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📊</span><h3>Grade Administration</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>View all grades across all courses: <code>GET /api/grades/statistics</code></li>
+        <li>View grades for a specific student: <code>GET /api/grades/admin/student/:id</code></li>
+        <li>Delete incorrect grade entries</li>
+        <li>Grade distribution chart shows A+/A/B+/B/C+/C/D/F breakdown visually</li>
+        <li>Export and print student grade reports</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📥</span><h3>Import from PDF</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Upload a university-formatted PDF: <code>POST /api/import/preview</code> — parses and shows a preview before committing</li>
+        <li>Confirm import: <code>POST /api/import</code> — creates student accounts and enrollments from the extracted data</li>
+        <li>Supports bulk import of hundreds of students in one upload</li>
+        <li>Error handling: duplicate student IDs are skipped, malformed rows are flagged</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       7. SCHEDULE SYSTEM
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">📅</span>
+    <h2>7. Schedule System</h2>
+    <span class="role-badge badge-admin">Admin / Staff / Student</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">⚙️</span><h3>Schedule Configuration</h3></div>
+    <div class="feature-body">
+      <p>Superadmin configures the scheduling parameters before generation.</p>
+      <table>
+        <tr><th>Parameter</th><th>Default</th><th>Description</th></tr>
+        <tr><td>Working Days</td><td>Sun, Mon, Tue, Wed, Thu, Sat</td><td>6-day week (Friday is weekend)</td></tr>
+        <tr><td>Day Start / End</td><td>08:00 – 18:00</td><td>5 time slots of 2h each</td></tr>
+        <tr><td>Slot Duration</td><td>120 minutes</td><td>Every lecture and section is 2 hours</td></tr>
+        <tr><td>Amphitheatres</td><td>4 (Amph 1–4)</td><td>Used for lectures only</td></tr>
+        <tr><td>Labs</td><td>8 (Lab 1–8)</td><td>Used for sections</td></tr>
+        <tr><td>Rooms</td><td>2 (Room A5, A6)</td><td>Used for sections</td></tr>
+        <tr><td>Groups</td><td>6 groups × 2 sections</td><td>12 section-subgroups per course</td></tr>
+        <tr><td>Semester/Year</td><td>Spring / Year 2</td><td>Filters active courses for generation</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🧠</span><h3>Schedule Generator Algorithm</h3></div>
+    <div class="feature-body">
+      <p>The core algorithm in <code>scheduleGenerator.js</code> places all lectures and sections without any conflicts. It uses a <strong>randomised greedy placement</strong> approach.</p>
+
+      <div class="callout info">
+        <span class="cicon">📐</span>
+        <p><strong>Key constraints enforced simultaneously:</strong> No two events in the same venue at the same time · No staff member teaching two slots simultaneously · No student group having two slots at the same time · Doctor max 3 days/week · Assistant max 3 days/week, max 5 sections/day</p>
+      </div>
+
+      <ul class="sub-list">
+        <li><strong>Step 1 — Build Pools:</strong> Reads venue list from config (or defaults). Separates amphitheatres (lectures), labs and rooms (sections)</li>
+        <li><strong>Step 2 — Pass 1: Lectures.</strong> For each course × each of 6 groups: shuffle WORKING_DAYS and TIME_SLOTS randomly → iterate until a free (day, time, amphitheatre) combination is found that satisfies all constraints → place and mark as used in the Registry</li>
+        <li><strong>Step 3 — Pass 2: Sections.</strong> For each course × each of 12 group×section jobs (shuffled): round-robin through assistants → shuffle days and times → find a free lab/room slot → place it</li>
+        <li><strong>Conflict Registry:</strong> A hash-set with three key types: <code>V|venue|day|start</code> (venue conflict), <code>S|staffId|day|start</code> (staff double-booking), <code>G|group|section|day|start</code> (student conflict)</li>
+        <li><strong>Randomisation:</strong> Fisher-Yates shuffle on days and slots before every placement → slots are spread evenly across all 6 days instead of clustering at the start of the week</li>
+        <li><strong>Result:</strong> 108 slots for 6 courses (6 lectures/course + 12 sections/course) with 0 conflicts</li>
+      </ul>
+
+      <div class="logic">
+        <span class="comment">// Simplified generator pseudocode</span><br/>
+        <span class="key">for</span> each course:<br/>
+        &nbsp;&nbsp;<span class="key">for</span> group = 1..6:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;days = <span class="val">shuffle</span>(WORKING_DAYS)<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;slots = <span class="val">shuffle</span>(TIME_SLOTS)<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">for</span> day <span class="key">in</span> days, slot <span class="key">in</span> slots:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">if</span> registry.canPlace(venue, doctor, group, day, slot):<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;registry.place(...) → <span class="val">slots.push({...})</span> → <span class="key">break</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📆</span><h3>Master Schedule View (Timetable Tab)</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Shows the full generated timetable for all groups and courses</li>
+        <li><strong>Week View:</strong> columns per day, sorted by start time, each slot as a card</li>
+        <li><strong>List View:</strong> flat list grouped by day</li>
+        <li>Each slot card shows: Course code/name · Type badge (Lecture/Section) · <strong>Group X</strong> badge · <strong>Section Y</strong> badge (sections only) · Venue · Staff name</li>
+        <li>Filter bar: filter by Day, Type, Course, Group, Section simultaneously</li>
+        <li>Summary chips show total lecture count, section count, and filtered count</li>
+        <li>Warnings panel (collapsible) shows any unscheduled slots and why</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">👥</span><h3>Group Schedule Tab</h3></div>
+    <div class="feature-body">
+      <p>Admin can preview and push the schedule for any specific group+section combination.</p>
+      <ul class="sub-list">
+        <li>Select Group (1–6) and Section (1 or 2) from dropdowns</li>
+        <li>Schedule <strong>automatically reloads</strong> whenever the dropdown changes — no button needed</li>
+        <li>Shows only: all lectures for that group + sections specifically for that section number</li>
+        <li><strong>Force on All Students button:</strong> <code>POST /api/schedule/force-group/:group/:section</code> — finds all students with matching <code>lectureGroup</code> and <code>section</code>, saves their personal Schedule doc with these exact slots</li>
+        <li>Confirmation dialog before force-push; success banner shows how many students were updated</li>
+      </ul>
+      <div class="flow">
+        <div class="flow-step">Select G3 S1</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">GET /schedule/group/3/1</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step orange">Filter: group=3, (lecture OR section=1)</div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step green">Preview shown instantly</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">👨‍🏫</span><h3>Staff Schedules Tab</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Admin sees a <strong>dropdown of all 28 staff members</strong> (doctors + assistants) each showing their slot count</li>
+        <li>Selecting a staff member instantly loads their personal schedule from the master (no button click needed)</li>
+        <li>Shows their role (Doctor/Assistant), all their slots across the week</li>
+        <li><strong>"Push All Staff Schedules"</strong> button: iterates every unique <code>staffId</code> in master slots → saves their slots as a Schedule document → staff can then view their schedule from their own account</li>
+        <li>Doctor/assistant logging in sees <strong>only their own week</strong>, automatically on page load</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🏛️</span><h3>Venue Availability Tab</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Shows all 14 venues (4 amphitheatres + 8 labs + 2 rooms) and their occupancy for every time slot</li>
+        <li>Filter by venue type (Amphitheatre / Lab / Room) and by day</li>
+        <li><strong>"Show Free Only"</strong> toggle — hides all occupied slots, showing only available time slots</li>
+        <li>Each slot shows: ✅ Free or 🔒 [CourseCode · type] for occupied slots</li>
+        <li>Powered by <code>GET /api/schedule/venues</code> which builds the occupancy grid from the master schedule</li>
+        <li>Color-coded: purple for amphitheatres, yellow for labs, green for rooms</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       8. SUPER ADMIN FEATURES
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">⚡</span>
+    <h2>8. Super Admin Exclusive Features</h2>
+    <span class="role-badge badge-super">Super Admin Only</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🔧</span><h3>Schedule Configuration Editor</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Edit all scheduling parameters: working days, time bounds, session durations, venue list</li>
+        <li>Saved to the <code>ScheduleConfig</code> singleton document in MongoDB</li>
+        <li>Version counter increments on every save so stale cached schedules can be detected</li>
+        <li>Changes take effect on the next schedule generation</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">⚡</span><h3>Generate Master Schedule</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><code>POST /api/schedule/generate-master</code> — runs the full algorithm for all active Year 2 Spring courses</li>
+        <li>Can filter by year and semester to generate only for a specific cohort</li>
+        <li>Result is upserted into the <code>MasterSchedule</code> collection</li>
+        <li>Response includes slot count, warning count, and a list of any unscheduled items</li>
+        <li>Each generation is <strong>randomised</strong> — re-generating produces a different valid timetable every time</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🗑️</span><h3>Delete Master Schedule</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>Button visible only to superadmin on the Timetable tab, only when a schedule exists</li>
+        <li>Confirmation dialog with warning before deletion</li>
+        <li><code>DELETE /api/schedule/master</code> — removes the MasterSchedule document AND clears all per-student Schedule documents</li>
+        <li>All staff and student schedule views immediately show "No schedule yet" after deletion</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🚀</span><h3>Force Push Schedules</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><strong>Force Group Schedule:</strong> Push schedule to all students in a specific Group + Section combination</li>
+        <li><strong>Force All Staff Schedules:</strong> Save each staff member's personal slots (filtered from master by their ID) as their Schedule document — they can then view it without generating manually</li>
+        <li><strong>Generate All Students:</strong> <code>POST /api/schedule/generate-all</code> — bulk generate and save schedules for all students based on their group/section assignments</li>
+      </ul>
+      <div class="callout success">
+        <span class="cicon">✅</span>
+        <p><strong>Recommended workflow:</strong> Generate Master → Push All Staff Schedules → Force Group schedules for each group → All users can now see their personal timetable</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">📋</span><h3>Course Staff Assignment</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li>For each course, superadmin assigns which doctors (max 2 per course) and which assistants (max 2 per course) will teach it</li>
+        <li>Stored as <code>scheduleDoctors[]</code> and <code>scheduleAssistants[]</code> on the Course document</li>
+        <li>The generator reads these arrays when building lectures (doctors) and sections (assistants)</li>
+        <li>Admin can remove a course from schedule generation by clearing its staff assignment</li>
+        <li>Only courses with at least one doctor OR assistant are included in generation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       9. TECHNICAL ARCHITECTURE
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">🔬</span>
+    <h2>9. Technical Architecture</h2>
+    <span class="role-badge badge-all">Technical Reference</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🗄️</span><h3>Database Models (MongoDB Collections)</h3></div>
+    <div class="feature-body">
+      <table>
+        <tr><th>Collection</th><th>Key Fields</th><th>Purpose</th></tr>
+        <tr><td><strong>User</strong></td><td>studentId, email, password, role, lectureGroup, section, enrolledCourses[], scheduleDoctors[]</td><td>All users: students, doctors, assistants, admins</td></tr>
+        <tr><td><strong>Course</strong></td><td>courseCode, courseName, creditHours, year, semester, status, scheduleDoctors[], scheduleAssistants[]</td><td>Course catalogue and staff assignments</td></tr>
+        <tr><td><strong>Grade</strong></td><td>student, course, marks, grade, semester</td><td>Individual grade records</td></tr>
+        <tr><td><strong>MasterSchedule</strong></td><td>semester, year, slots[], warnings[], generatedAt</td><td>The full generated timetable</td></tr>
+        <tr><td><strong>Schedule</strong></td><td>student (userId), slots[], semester, year</td><td>Per-user personal schedule (students &amp; staff)</td></tr>
+        <tr><td><strong>ScheduleConfig</strong></td><td>workingDays, rooms[], semester, year, version</td><td>Algorithm input parameters (singleton)</td></tr>
+        <tr><td><strong>Material</strong></td><td>title, course, uploadedBy, fileUrl, createdAt</td><td>Course materials uploaded by staff</td></tr>
+        <tr><td><strong>Assignment</strong></td><td>title, course, dueDate, createdBy, fileUrl</td><td>Assignments created by staff</td></tr>
+        <tr><td><strong>Submission</strong></td><td>assignment, student, fileUrl, feedback, grade</td><td>Student submissions and feedback</td></tr>
+        <tr><td><strong>RegistrationPeriod</strong></td><td>name, startDate, endDate, isActive, courses[]</td><td>Controls enrollment windows</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🛡️</span><h3>Security Architecture</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><strong>JWT Auth:</strong> All routes (except login/register) require a valid Bearer token. Tokens expire in 7 days</li>
+        <li><strong>Password Hashing:</strong> bcrypt with 10 salt rounds — passwords never stored in plain text</li>
+        <li><strong>Role Guards:</strong> <code>isAdmin</code>, <code>requireSuperAdmin</code> middleware on all sensitive routes</li>
+        <li><strong>Auto-retry:</strong> Frontend automatically retries failed requests once on 5xx errors</li>
+        <li><strong>Cache Busting:</strong> After any mutation (POST/PUT/DELETE), related cache keys are cleared so stale data is never shown</li>
+        <li><strong>Keep-alive:</strong> Frontend pings the backend every 55 seconds to prevent cold starts on free hosting tiers</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">⚡</span><h3>Frontend Performance (Caching &amp; Deduplication)</h3></div>
+    <div class="feature-body">
+      <ul class="sub-list">
+        <li><strong>60-second GET cache:</strong> Read-heavy endpoints (courses, grades, schedule) are cached in memory for 60 seconds so switching tabs is instant</li>
+        <li><strong>In-flight deduplication:</strong> If two components request the same endpoint simultaneously, only one HTTP request is made; both get the same promise result</li>
+        <li><strong>Smart cache invalidation:</strong> Each mutation calls <code>clearCache('key')</code> with a prefix to bust only related cache entries (e.g. grading a student only clears grade cache, not course cache)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════
+       QUICK REFERENCE SUMMARY
+  ══════════════════════════════════════════════════ -->
+  <div class="section-header page-break">
+    <span class="icon">📌</span>
+    <h2>Quick Reference — API Endpoints</h2>
+    <span class="role-badge badge-all">Technical</span>
+  </div>
+
+  <div class="feature">
+    <div class="feature-header"><span class="ficon">🗺️</span><h3>Key API Routes Summary</h3></div>
+    <div class="feature-body">
+      <table>
+        <tr><th>Method</th><th>Route</th><th>Who</th><th>Description</th></tr>
+        <tr><td>POST</td><td>/api/auth/login</td><td>All</td><td>Login, returns JWT</td></tr>
+        <tr><td>GET</td><td>/api/schedule/master</td><td>Admin+</td><td>Get most recent master schedule</td></tr>
+        <tr><td>POST</td><td>/api/schedule/generate-master</td><td>SuperAdmin</td><td>Run schedule generator</td></tr>
+        <tr><td>DELETE</td><td>/api/schedule/master</td><td>SuperAdmin</td><td>Delete master + all student schedules</td></tr>
+        <tr><td>GET</td><td>/api/schedule/group/:g/:s</td><td>Admin+</td><td>Preview group+section slots</td></tr>
+        <tr><td>POST</td><td>/api/schedule/force-group/:g/:s</td><td>SuperAdmin</td><td>Push schedule to all students in group</td></tr>
+        <tr><td>GET</td><td>/api/schedule/staff/me</td><td>Any staff</td><td>My personal teaching slots</td></tr>
+        <tr><td>GET</td><td>/api/schedule/staff-list</td><td>Admin+</td><td>All staff with slot counts</td></tr>
+        <tr><td>POST</td><td>/api/schedule/force-staff-all</td><td>SuperAdmin</td><td>Push slots to all staff Schedule docs</td></tr>
+        <tr><td>GET</td><td>/api/schedule/venues</td><td>Admin+</td><td>Venue availability grid</td></tr>
+        <tr><td>POST</td><td>/api/schedule/generate/me</td><td>Student</td><td>Generate my personal schedule</td></tr>
+        <tr><td>GET</td><td>/api/grades/gpa</td><td>Student</td><td>Calculate &amp; return GPA</td></tr>
+        <tr><td>POST</td><td>/api/grades</td><td>Doctor/Asst</td><td>Add grade for a student</td></tr>
+        <tr><td>POST</td><td>/api/import</td><td>Admin+</td><td>Bulk import students from PDF</td></tr>
+        <tr><td>GET</td><td>/api/registration/active</td><td>Student</td><td>Check if enrollment is open</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="margin-top:60px; padding-top:24px; border-top:2px solid #e2e8f0; text-align:center; color:#94a3b8; font-size:12px;">
+    <p>🎓 HNU University Portal — Faculty of Computers &amp; Information</p>
+    <p style="margin-top:4px;">System Documentation · Generated March 2026 · Confidential</p>
+  </div>
+
+</div>
+</body>
+</html>
+

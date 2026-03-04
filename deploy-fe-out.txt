@@ -1,0 +1,80 @@
+Vercel CLI 50.19.1
+Retrieving project…
+Deploying zikas1208hs-projects/hnu-portal
+Uploading [--------------------] (0.0B/20.3KB)
+Uploading [===========---------] (11.9KB/20.3KB)
+Uploading [============--------] (13.0KB/20.3KB)
+Uploading [====================] (20.3KB/20.3KB)
+Inspect: https://vercel.com/zikas1208hs-projects/hnu-portal/47YuqssxwBrffLvsSqdrkqyLNCM2 [3s]
+Production: https://hnu-portal-2dfmrun0k-zikas1208hs-projects.vercel.app [3s]
+https://hnu-portal-2dfmrun0k-zikas1208hs-projects.vercel.appBuilding...
+Building...
+Building: Running build in Washington, D.C., USA (East) – iad1
+Building: Build machine configuration: 2 cores, 8 GB
+Building: Retrieving list of deployment files...
+Building: Downloading 138 deployment files...
+Building: Restored build cache from previous deployment (DCFBV9rcrKXPXx88DVzQ7mphDqnW)
+Building: Running "vercel build"
+Building: Vercel CLI 50.23.0
+Building: Installing dependencies...
+Building: up to date in 3s
+Building: 271 packages are looking for funding
+Building: run `npm fund` for details
+Building: npm notice
+Building: npm notice New minor version of npm available! 11.6.2 -> 11.10.1
+Building: npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.10.1
+Building: npm notice To update run: npm install -g npm@11.10.1
+Building: npm notice
+Building: Running "npm run build"
+Building: > frontend@0.1.0 build
+Building: > react-scripts build
+Building: (node:93) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+Building: (Use `node --trace-deprecation ...` to show where the warning was created)
+Building: Creating an optimized production build...
+Building: Compiled successfully.
+Building: File sizes after gzip:
+Building: 97.04 kB (+1.31 kB)  build/static/js/main.bd09875b.js
+Building: 5.64 kB (+624 B)     build/static/css/main.10bfd055.css
+Building: 3.81 kB (+1.45 kB)   build/static/js/49.947bcaf7.chunk.js
+Building: 3.5 kB (+5 B)        build/static/js/739.f278f4ed.chunk.js
+Building: 3 kB (+37 B)         build/static/css/37.b8ee0606.chunk.css
+Building: 2.9 kB (+760 B)      build/static/css/49.9015cb7b.chunk.css
+Building: 2.87 kB (+1 B)       build/static/css/739.a9760a76.chunk.css
+Building: 2.85 kB (-3 B)       build/static/css/646.50622128.chunk.css
+Building: 2.73 kB (+5 B)       build/static/js/646.723c57a8.chunk.js
+Building: 2.62 kB (+564 B)     build/static/js/404.bd6adf53.chunk.js
+Building: 2.6 kB (+9 B)        build/static/js/504.176e3eb4.chunk.js
+Building: 2.52 kB (+5 B)       build/static/js/167.a690849a.chunk.js
+Building: 2.16 kB (+289 B)     build/static/css/191.927d12ef.chunk.css
+Building: 2.07 kB (+2 B)       build/static/css/504.64991274.chunk.css
+Building: 2.05 kB (+6 B)       build/static/js/37.d9747cd7.chunk.js
+Building: 2.04 kB (+5 B)       build/static/js/536.f57f9a65.chunk.js
+Building: 1.99 kB (+283 B)     build/static/css/404.444b3b89.chunk.css
+Building: 1.97 kB (-3 B)       build/static/css/167.b256f16e.chunk.css
+Building: 1.88 kB (+3 B)       build/static/css/536.c7b3ed32.chunk.css
+Building: 1.79 kB (+442 B)     build/static/js/191.3b6ec868.chunk.js
+Building: 1.76 kB              build/static/js/453.20359781.chunk.js
+Building: 1.68 kB              build/static/css/897.f3eba3ea.chunk.css
+Building: 1.67 kB (+5 B)       build/static/js/771.57aa4800.chunk.js
+Building: 1.54 kB (+82 B)      build/static/css/683.3a528623.chunk.css
+Building: 1.54 kB (+6 B)       build/static/js/107.6a5d4c86.chunk.js
+Building: 1.52 kB (+267 B)     build/static/js/356.aed57bd6.chunk.js
+Building: 1.48 kB (-2 B)       build/static/css/771.8f62125e.chunk.css
+Building: 1.46 kB (+179 B)     build/static/js/683.d66f6f35.chunk.js
+Building: 1.37 kB (-1 B)       build/static/css/107.a8b7a303.chunk.css
+Building: 1.36 kB              build/static/css/356.42eaffa0.chunk.css
+Building: 847 B                build/static/js/897.66c6729b.chunk.js
+Building: 79 B                 build/static/js/222.bc0907fd.chunk.js
+Building: The project was built assuming it is hosted at /.
+Building: You can control this with the homepage field in your package.json.
+Building: The build folder is ready to be deployed.
+Building: You may serve it with a static server:
+Building: npm install -g serve
+Building: serve -s build
+Building: Find out more about deployment here:
+Building: https://cra.link/deployment
+Building: Build Completed in /vercel/output [13s]
+Building: Deploying outputs...
+[2K[1A[2K[GProduction: https://hnu-portal-2dfmrun0k-zikas1208hs-projects.vercel.app [29s]
+Completing...
+Aliased: https://hnu-portal.vercel.app [29s]

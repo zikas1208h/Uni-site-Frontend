@@ -1,0 +1,114 @@
+/* ── Notification Bell ── */
+.nb-wrap { position: relative; }
+
+.nb-bell {
+  position: relative; background: none; border: none;
+  font-size: 20px; cursor: pointer; padding: 6px 8px;
+  border-radius: 10px; transition: background 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.nb-bell:hover { background: var(--border-color); }
+
+.nb-badge {
+  position: absolute; top: 1px; right: 1px;
+  background: #ef4444; color: #fff;
+  font-size: 10px; font-weight: 800;
+  min-width: 16px; height: 16px; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 4px; line-height: 1;
+  border: 2px solid var(--bg-primary, #fff);
+  pointer-events: none;
+}
+
+/* Dropdown */
+.nb-dropdown {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  width: 360px; max-height: 480px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+  z-index: 9999;
+  display: flex; flex-direction: column;
+  animation: dropIn 0.18s ease-out;
+  overflow: hidden;
+}
+@keyframes dropIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+.nb-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+.nb-header-title { font-size: 15px; font-weight: 800; color: var(--text-primary); }
+.nb-mark-all {
+  background: none; border: none; font-size: 12px; font-weight: 700;
+  color: #6366f1; cursor: pointer; padding: 4px 8px; border-radius: 6px;
+}
+.nb-mark-all:hover { background: #6366f115; }
+
+/* List */
+.nb-list { overflow-y: auto; flex: 1; }
+.nb-list::-webkit-scrollbar { width: 4px; }
+.nb-list::-webkit-scrollbar-track { background: transparent; }
+.nb-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 2px; }
+
+.nb-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border-color);
+  position: relative; transition: background 0.15s;
+  cursor: default;
+}
+.nb-item:last-child { border-bottom: none; }
+.nb-item.unread { background: var(--type-color, #6366f1)05; cursor: pointer; }
+.nb-item.unread:hover { background: var(--type-color, #6366f1)10; }
+.nb-item:not(.unread) { opacity: 0.75; }
+
+.nb-item-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; flex-shrink: 0;
+}
+.nb-item-body { flex: 1; min-width: 0; }
+.nb-item-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; line-height: 1.3; }
+.nb-item-msg { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 5px; }
+.nb-course-chip {
+  display: inline-block; padding: 2px 8px; border-radius: 6px;
+  background: #6366f115; color: #6366f1;
+  font-size: 11px; font-weight: 700; margin-right: 6px;
+}
+.nb-time { font-size: 11px; color: #94a3b8; }
+
+.nb-dot {
+  position: absolute; top: 50%; right: 36px;
+  transform: translateY(-50%);
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--type-color, #6366f1);
+  pointer-events: none;
+}
+
+.nb-del {
+  background: none; border: none; font-size: 12px; color: var(--text-secondary);
+  cursor: pointer; padding: 2px 5px; border-radius: 4px; flex-shrink: 0;
+  margin-top: 2px; opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+}
+.nb-item:hover .nb-del { opacity: 1; }
+.nb-del:hover { background: #ef444415; color: #ef4444; }
+
+/* Empty / Loading */
+.nb-empty { display: flex; flex-direction: column; align-items: center; padding: 36px; gap: 8px; }
+.nb-empty span { font-size: 36px; }
+.nb-empty p { font-size: 14px; color: var(--text-secondary); font-weight: 600; }
+
+.nb-loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 28px; }
+.nb-spinner { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border-color); border-top-color: #6366f1; animation: nbspin 0.7s linear infinite; }
+@keyframes nbspin { to { transform: rotate(360deg); } }
+
+/* Mobile */
+@media (max-width: 480px) {
+  .nb-dropdown { width: calc(100vw - 32px); right: -12px; }
+}
+

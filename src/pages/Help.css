@@ -1,0 +1,92 @@
+.help-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  transition: background 0.2s;
+}
+body.dark-mode .help-page { background: #0d0d14; }
+
+/* ── Hero ── */
+.help-hero {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  padding: 60px 20px 50px;
+  text-align: center;
+  color: #fff;
+}
+body.dark-mode .help-hero { background: linear-gradient(135deg, #4338ca 0%, #312e81 100%); }
+.help-hero-inner { max-width: 600px; margin: 0 auto; }
+.help-hero-icon  { font-size: 52px; display: block; margin-bottom: 16px; }
+.help-hero h1    { font-size: 32px; font-weight: 800; margin: 0 0 12px; color: #fff; }
+.help-hero p     { font-size: 16px; opacity: 0.88; margin: 0 0 28px; color: #fff; }
+
+.help-tour-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px; background: #fff; color: #6366f1;
+  border: none; border-radius: 12px; font-size: 15px;
+  font-weight: 800; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.help-tour-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.22); }
+body.dark-mode .help-tour-btn { background: #1e1b4b; color: #a5b4fc; }
+body.dark-mode .help-tour-btn:hover { background: #2e2b6b; }
+
+/* ── Content ── */
+.help-content { max-width: 800px; margin: 0 auto; padding: 40px 20px 60px; }
+.help-section-title { margin-bottom: 24px; }
+.help-section-title h2 { font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 6px; }
+.help-section-title p  { color: #64748b; font-size: 14px; margin: 0; }
+body.dark-mode .help-section-title h2 { color: #f1f5f9; }
+body.dark-mode .help-section-title p  { color: #64748b; }
+
+/* ── Cards ── */
+.help-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 48px; }
+.help-card {
+  background: #fff; border-radius: 14px; padding: 18px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1.5px solid #e2e8f0;
+  cursor: pointer; transition: box-shadow 0.18s, border-color 0.18s;
+}
+.help-card:hover  { box-shadow: 0 6px 24px rgba(99,102,241,0.12); border-color: #6366f1; }
+.help-card--open  { border-color: #6366f1; box-shadow: 0 6px 24px rgba(99,102,241,0.14); }
+body.dark-mode .help-card       { background: #13131f; border-color: #252535; box-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+body.dark-mode .help-card:hover { border-color: #6366f1; }
+body.dark-mode .help-card--open { border-color: #6366f1; }
+
+.help-card-header  { display: flex; align-items: center; gap: 14px; }
+.help-card-icon    { font-size: 26px; flex-shrink: 0; }
+.help-card-info    { flex: 1; }
+.help-card-info h3 { font-size: 15px; font-weight: 800; color: #1e293b; margin: 0 0 3px; }
+.help-card-info p  { font-size: 13px; color: #64748b; margin: 0; line-height: 1.5; }
+body.dark-mode .help-card-info h3 { color: #f1f5f9; }
+body.dark-mode .help-card-info p  { color: #94a3b8; }
+.help-card-chevron { color: #6366f1; font-size: 11px; flex-shrink: 0; }
+
+.help-card-details {
+  margin: 14px 0 0 40px; padding: 14px 0 0;
+  list-style: none; display: flex; flex-direction: column; gap: 8px;
+  border-top: 1px solid #e2e8f0;
+}
+body.dark-mode .help-card-details { border-color: #252535; }
+.help-card-details li { font-size: 13px; color: #475569; line-height: 1.6; }
+body.dark-mode .help-card-details li { color: #94a3b8; }
+
+/* ── Tips ── */
+.help-tips h2 { font-size: 22px; font-weight: 800; color: #1e293b; margin: 0 0 20px; }
+body.dark-mode .help-tips h2 { color: #f1f5f9; }
+.help-tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 600px) { .help-tips-grid { grid-template-columns: 1fr; } }
+
+.help-tip {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: #fff; border-radius: 12px; padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+  transition: box-shadow 0.15s;
+}
+.help-tip:hover { box-shadow: 0 4px 18px rgba(99,102,241,0.1); }
+body.dark-mode .help-tip { background: #13131f; border-color: #252535; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+body.dark-mode .help-tip:hover { box-shadow: 0 4px 18px rgba(99,102,241,0.15); }
+
+.help-tip > span { font-size: 24px; flex-shrink: 0; }
+.help-tip strong { font-size: 13px; font-weight: 700; color: #1e293b; display: block; margin-bottom: 3px; }
+.help-tip p      { font-size: 12px; color: #64748b; margin: 0; line-height: 1.5; }
+body.dark-mode .help-tip strong { color: #f1f5f9; }
+body.dark-mode .help-tip p      { color: #94a3b8; }

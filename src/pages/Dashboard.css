@@ -1,0 +1,946 @@
+.dashboard {
+  padding: 40px 80px;
+  width: 100%;
+  animation: fadeIn 0.6s ease-out;
+  position: relative;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header Section */
+.dashboard-header {
+  margin-bottom: 40px;
+  animation: slideInLeft 0.6s ease-out;
+  position: relative;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.dashboard-header h1 {
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-size: 42px;
+  font-weight: 900;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  display: inline-block;
+}
+
+.dashboard-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #374151, #4b5563);
+  border-radius: 2px;
+}
+
+.dashboard-subtitle {
+  font-size: 17px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-bottom: 50px;
+}
+
+.stat-card {
+  background: var(--bg-primary);
+  padding: 35px 30px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-fill-mode: both;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #374151, #4b5563, #374151);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+.stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(55, 65, 81, 0.25);
+}
+
+.stat-card h3 {
+  color: var(--text-secondary);
+  font-size: 15px;
+  margin-bottom: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.stat-value {
+  font-size: 54px;
+  font-weight: 900;
+  color: #374151;
+  margin-bottom: 8px;
+  animation: countUp 1s ease-out;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gpa-card {
+  background: linear-gradient(135deg, rgba(55, 65, 81, 0.08) 0%, rgba(75, 85, 99, 0.08) 100%);
+  border-color: rgba(55, 65, 81, 0.25);
+}
+
+.gpa-card .stat-value {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 60px;
+}
+
+.stat-label {
+  color: var(--text-tertiary);
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Credit Eligibility Card */
+.credit-eligibility-card {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  animation-delay: 0.4s;
+  position: relative;
+  overflow: hidden;
+}
+
+.credit-eligibility-card::before {
+  background: linear-gradient(90deg, #f59e0b, #d97706, #f59e0b);
+}
+
+.credit-eligibility-card h3 {
+  color: white;
+}
+
+.credit-eligibility-card .stat-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.credit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.credit-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  transition: var(--transition-base);
+}
+
+.credit-row:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(5px);
+}
+
+.credit-label {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.credit-value {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.credit-value.available {
+  color: #ffd700;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.credit-status {
+  font-size: 13px;
+  text-align: center;
+  margin-top: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Dashboard Sections */
+.dashboard-sections {
+  display: grid;
+  gap: 35px;
+}
+
+.section {
+  background: var(--bg-primary);
+  padding: 35px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  animation: fadeInUp 0.6s ease-out;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #374151, #4b5563, #374151);
+  background-size: 200% 100%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section:hover {
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(55, 65, 81, 0.15);
+}
+
+.section h2 {
+  color: var(--text-primary);
+  margin-bottom: 25px;
+  font-size: 28px;
+  font-weight: 800;
+  font-family: 'Inter', -apple-system, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section h2::before {
+  content: '';
+  width: 6px;
+  height: 30px;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  border-radius: 3px;
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: 60px 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.empty-message::before {
+  content: '📭';
+  font-size: 50px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+/* Courses Grid */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.course-card {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  color: white;
+  padding: 28px;
+  border-radius: var(--border-radius-lg);
+  position: relative;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: slideInUp 0.6s ease-out;
+  animation-fill-mode: both;
+  box-shadow: 0 8px 25px rgba(55, 65, 81, 0.25);
+  overflow: hidden;
+  width: 100%;
+}
+
+.course-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.course-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.course-card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 16px 40px rgba(55, 65, 81, 0.35);
+}
+
+.course-card h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.course-code {
+  font-size: 14px;
+  opacity: 0.95;
+  margin-bottom: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.course-instructor,
+.course-schedule {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.course-instructor::before {
+  content: '👨‍🏫';
+}
+
+.course-schedule::before {
+  content: '📅';
+}
+
+.course-credits {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 8px 14px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Grades Table */
+.grades-table {
+  overflow-x: auto;
+  border-radius: var(--border-radius-md);
+  box-shadow: inset 0 0 0 1px var(--border-color);
+}
+
+.grades-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grades-table th,
+.grades-table td {
+  padding: 16px 18px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.grades-table th {
+  background: linear-gradient(135deg, rgba(55, 65, 81, 0.08) 0%, rgba(75, 85, 99, 0.08) 100%);
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+}
+
+.grades-table td {
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.grades-table tr {
+  transition: var(--transition-base);
+}
+
+.grades-table tbody tr:hover {
+  background: rgba(55, 65, 81, 0.05);
+}
+
+/* Materials List */
+.materials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.material-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: linear-gradient(135deg,  rgba(55, 65, 81, 0.08)  0%,  rgba(75, 85, 99, 0.08)  100%);
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.material-item:hover {
+  background: var(--bg-primary);
+  border-color: rgba(55, 65, 81, 0.25);
+  box-shadow: 0 4px 15px rgba(55, 65, 81, 0.08);
+}
+
+.material-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.material-details {
+  flex: 1;
+}
+
+.material-details h4 {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.material-course {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.material-meta {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.material-type,
+.material-size,
+.material-date {
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.material-type {
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  color: white;
+}
+
+.material-size {
+  background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+  color: white;
+}
+
+.material-date {
+  background: linear-gradient(135deg, #9ca3af 0%, #f5576c 100%);
+  color: white;
+}
+
+.btn-download-small {
+  padding: 12px;
+  background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  box-shadow: 0 4px 12px rgba(55, 65, 81, 0.25);
+}
+
+.btn-download-small:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(55, 65, 81, 0.3);
+}
+
+.view-more {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+/* Credit Eligibility Info */
+.credit-eligibility-info {
+  background: var(--bg-primary);
+  padding: 30px;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-top: 30px;
+  animation: fadeInUp 0.6s ease-out;
+  border: 2px solid rgba(237, 137, 54, 0.2);
+}
+
+.credit-eligibility-info h3 {
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Inter', -apple-system, sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.credit-eligibility-info h3::before {
+  content: '📊';
+  font-size: 28px;
+}
+
+.credit-eligibility-info p {
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.credit-eligibility-info strong {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
+.eligibility-rules {
+  margin-top: 25px;
+  padding: 25px;
+  background: linear-gradient(135deg, rgba(237, 137, 54, 0.05) 0%, rgba(221, 107, 32, 0.05) 100%);
+  border-radius: var(--border-radius-md);
+  border-left: 5px solid #f59e0b;
+}
+
+.eligibility-rules h4 {
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.eligibility-rules ul {
+  list-style: none;
+  padding: 0;
+}
+
+.eligibility-rules li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 2px solid var(--border-color);
+  transition: var(--transition-base);
+}
+
+.eligibility-rules li:hover {
+  padding-left: 10px;
+  background: rgba(237, 137, 54, 0.05);
+}
+
+.eligibility-rules li:last-child {
+  border-bottom: none;
+}
+
+.eligibility-rules .range {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.eligibility-rules .hours {
+  font-weight: 800;
+  color: #f59e0b;
+  font-size: 16px;
+  background: rgba(237, 137, 54, 0.1);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+/* ============================================
+   MOBILE OPTIMIZATION
+   ============================================ */
+@media (max-width: 1024px) {
+  .dashboard {
+    padding: 28px 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 20px 16px;
+  }
+
+  .dashboard-header {
+    margin-bottom: 28px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 28px;
+    line-height: 1.2;
+  }
+
+  .dashboard-header h1::after {
+    width: 60px;
+    height: 3px;
+    bottom: -6px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 14px;
+    margin-top: 14px;
+  }
+
+  /* Stats — 2 column on tablet */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    padding: 20px 16px;
+  }
+
+  .stat-icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+
+  .stat-card h3 {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-size: 36px;
+  }
+
+  /* Sections */
+  .section {
+    padding: 20px 16px;
+    margin-bottom: 20px;
+  }
+
+  .section h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* Grades table — horizontal scroll */
+  .grades-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+  }
+
+  .grades-table {
+    min-width: 480px;
+    font-size: 13px;
+  }
+
+  .grades-table th,
+  .grades-table td {
+    padding: 10px 10px;
+  }
+
+  /* Credit eligibility */
+  .credit-eligibility-info {
+    padding: 18px 16px;
+    margin-top: 20px;
+  }
+
+  .credit-eligibility-info h3 {
+    font-size: 18px;
+  }
+
+  .eligibility-rules {
+    padding: 16px;
+  }
+
+  .eligibility-rules li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 12px 0;
+  }
+
+  .eligibility-rules .hours {
+    font-size: 14px;
+  }
+
+  /* Recent materials on dashboard */
+  .material-item {
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .material-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 14px 10px;
+  }
+
+  /* Stats — 2 column on phone */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 14px 10px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+  }
+
+  .gpa-card .stat-value {
+    font-size: 34px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 22px;
+  }
+
+  .section h2 {
+    font-size: 17px;
+  }
+
+  /* course cards full width */
+  .courses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* table horizontal scroll */
+  .grades-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 380px) {
+  .dashboard { padding: 12px 8px; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card { padding: 12px 8px; }
+  .stat-value { font-size: 24px; }
+  .dashboard-header h1 { font-size: 19px; }
+}
+
+/* ── Grade Badge ── */
+.grade-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 25px;
+  font-weight: 800;
+  font-size: 13px;
+  text-align: center;
+  min-width: 52px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Grades Table ── */
+.grades-table {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #e5e7eb);
+}
+
+.grades-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.grades-table thead tr {
+  background: var(--bg-secondary, #f8f9fa);
+}
+
+.grades-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-color, #e5e7eb);
+}
+
+.grades-table td {
+  padding: 12px 16px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  vertical-align: middle;
+}
+
+.grades-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+body.dark-mode .grades-table {
+  border-color: #2a2a2a;
+}
+
+body.dark-mode .grades-table thead tr {
+  background: #111111;
+}
+
+body.dark-mode .grades-table th {
+  border-bottom-color: #2a2a2a;
+  color: #9ca3af;
+}
+
+body.dark-mode .grades-table td {
+  border-bottom-color: #1a1a1a;
+  color: #f1f5f9;
+}
+
+
