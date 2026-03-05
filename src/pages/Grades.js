@@ -69,9 +69,9 @@ const Grades = () => {
     </div>
   );
 
-  // Grades that have any semester grade data
-  const semesterGrades  = grades.filter(g => g.semesterGrade?.midtermScore != null || g.semesterGrade?.finalScore != null || g.semesterGrade?.grade != null);
-  // Grades that have classwork entries
+  // Grades that have semester grade data (final or practical)
+  const semesterGrades  = grades.filter(g => g.semesterGrade?.finalScore != null || g.semesterGrade?.practicalScore != null || g.semesterGrade?.grade != null);
+  // Grades that have classwork entries (assignments, quizzes, midterms)
   const classworkGrades = grades.filter(g => g.classwork && g.classwork.length > 0);
 
   const groupedSemester  = groupBySemester(semesterGrades);
@@ -110,10 +110,10 @@ const Grades = () => {
       {/* ── Tabs ── */}
       <div className="grade-mode-toggle" style={{ marginBottom: 24 }}>
         <button className={`mode-btn ${activeTab === 'semester' ? 'active' : ''}`} onClick={() => setActiveTab('semester')}>
-          🎓 Semester Grades <small style={{ opacity:.7 }}>(Midterm + Final · A–F · GPA)</small>
+          🎓 Semester Grades <small style={{ opacity:.7 }}>(Final + Practical · A–F · GPA)</small>
         </button>
         <button className={`mode-btn ${activeTab === 'classwork' ? 'active' : ''}`} onClick={() => setActiveTab('classwork')}>
-          📝 Classwork <small style={{ opacity:.7 }}>(Assignments &amp; Quizzes · raw marks)</small>
+          📝 Classwork <small style={{ opacity:.7 }}>(Assignments, Quizzes &amp; Midterms · raw marks)</small>
         </button>
       </div>
 
@@ -131,57 +131,60 @@ const Grades = () => {
                 </div>
                 <div className="grades-table-container">
                   <table className="grades-table">
-                    <thead>
-                      <tr>
-                        <th>{t('common.code')}</th>
-                        <th>{t('grades.course')}</th>
-                        <th>{t('grades.credits')}</th>
-                        <th>Midterm</th>
-                        <th>Final</th>
-                        <th>Total</th>
-                        <th>{t('grades.grade')}</th>
-                        <th>GPA</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {semGrades.map(g => {
-                        const sg = g.semesterGrade || {};
-                        const finalized = sg.isFinalized;
-                        return (
-                          <tr key={g._id} className={`${g.isRetake ? 'retake-row' : ''} ${!finalized ? 'partial-grade-row' : ''}`}>
-                            <td className="course-code-cell">{g.course?.courseCode}</td>
-                            <td className="course-name-cell">
-                              {g.course?.courseName}
-                              {g.isRetake && <span className="retake-badge">🔁 Retake {g.previousGrade ? `(was ${g.previousGrade})` : ''}</span>}
-                              {!finalized && <span className="partial-badge">⏳ Pending Final</span>}
-                            </td>
-                            <td className="credits-cell">{g.course?.credits}</td>
-                            <td className="scores-breakdown-cell">
-                              {sg.midtermScore != null
-                                ? <span className="score-chip"><span className="score-chip-val">{sg.midtermScore}/{sg.midtermMaxScore || 40}</span></span>
-                                : <span style={{ color:'#94a3b8', fontSize:12 }}>—</span>}
-                            </td>
-                            <td className="scores-breakdown-cell">
-                              {sg.finalScore != null
-                                ? <span className="score-chip score-chip-final"><span className="score-chip-val">{sg.finalScore}/{sg.finalMaxScore || 60}</span></span>
-                                : <span style={{ color:'#94a3b8', fontSize:12 }}>—</span>}
-                            </td>
-                            <td style={{ fontWeight:700 }}>
-                              {sg.totalScore != null ? `${sg.totalScore.toFixed(1)}/100` : '—'}
-                            </td>
-                            <td>
-                              {finalized
-                                ? <span className={`grade-badge ${gradeClass(sg.grade)}`}>{sg.grade}</span>
-                                : <span style={{ color:'#94a3b8', fontSize:13 }}>Pending</span>}
-                              {g.isRetake && sg.grade && sg.grade !== 'F' && <span className="retake-cap-note">⚠ max 83</span>}
-                            </td>
-                            <td className="grade-point-cell" style={!finalized ? { color:'#94a3b8' } : {}}>
-                              {finalized ? sg.gradePoint?.toFixed(2) : '—'}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
+                      <thead>
+                        <tr>
+                          <th>{t('common.code')}</th>
+                          <th>{t('grades.course')}</th>
+                          <th>{t('grades.credits')}</th>
+                          <th>Final Exam</th>
+                          <th>Practical</th>
+                          <th>Total</th>
+                          <th>{t('grades.grade')}</th>
+                          <th>GPA</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {semGrades.map(g => {
+                          const sg = g.semesterGrade || {};
+                          const finalized = sg.isFinalized;
+                          const hasPractical = g.course?.hasPractical;
+                          return (
+                            <tr key={g._id} className={`${g.isRetake ? 'retake-row' : ''} ${!finalized ? 'partial-grade-row' : ''}`}>
+                              <td className="course-code-cell">{g.course?.courseCode}</td>
+                              <td className="course-name-cell">
+                                {g.course?.courseName}
+                                {g.isRetake && <span className="retake-badge">🔁 Retake {g.previousGrade ? `(was ${g.previousGrade})` : ''}</span>}
+                                {!finalized && <span className="partial-badge">⏳ Pending Final</span>}
+                              </td>
+                              <td className="credits-cell">{g.course?.credits}</td>
+                              <td className="scores-breakdown-cell">
+                                {sg.finalScore != null
+                                  ? <span className="score-chip score-chip-final"><span className="score-chip-val">{sg.finalScore}/{sg.finalMaxScore || 100}</span></span>
+                                  : <span style={{ color:'#94a3b8', fontSize:12 }}>—</span>}
+                              </td>
+                              <td className="scores-breakdown-cell">
+                                {hasPractical
+                                  ? sg.practicalScore != null
+                                    ? <span className="score-chip" style={{ background:'rgba(139,92,246,0.12)', color:'#7c3aed' }}><span className="score-chip-val">{sg.practicalScore}/{sg.practicalMaxScore || 100}</span></span>
+                                    : <span style={{ color:'#d97706', fontSize:12 }}>⏳ Pending</span>
+                                  : <span style={{ color:'#94a3b8', fontSize:12 }}>N/A</span>}
+                              </td>
+                              <td style={{ fontWeight:700 }}>
+                                {sg.totalScore != null ? `${sg.totalScore.toFixed(1)}/100` : '—'}
+                              </td>
+                              <td>
+                                {finalized
+                                  ? <span className={`grade-badge ${gradeClass(sg.grade)}`}>{sg.grade}</span>
+                                  : <span style={{ color:'#94a3b8', fontSize:13 }}>Pending</span>}
+                                {g.isRetake && sg.grade && sg.grade !== 'F' && <span className="retake-cap-note">⚠ max 83</span>}
+                              </td>
+                              <td className="grade-point-cell" style={!finalized ? { color:'#94a3b8' } : {}}>
+                                {finalized ? sg.gradePoint?.toFixed(2) : '—'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
                   </table>
                 </div>
               </div>
@@ -208,7 +211,7 @@ const Grades = () => {
                       <table className="grades-table">
                         <thead>
                           <tr>
-                            <th>Assignment / Quiz</th>
+                            <th>Assignment / Quiz / Midterm</th>
                             <th>Type</th>
                             <th>Score</th>
                             <th>Max</th>

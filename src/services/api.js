@@ -157,13 +157,15 @@ export const gradeAPI = {
   getMyStatistics:     () => cachedGet('grades:my-stats',           () => api.get('/grades/statistics/my-courses')),
   getGradeByCourse:    (id) => cachedGet(`grades:course:${id}`,     () => api.get(`/grades/course/${id}`)),
   getStudentGradesById:(id) => cachedGet(`grades:by-student:${id}`, () => api.get(`/grades/admin/student/${id}`)),
-  // New: set midterm or final score
+  // Semester grade: final + practical (affects GPA)
   saveSemesterGrade:   (data) => { clearCache('grades'); return api.post('/grades/semester', data); },
-  // New: grade a classwork entry (assignment/quiz) for one student
+  // Grade a classwork entry by assignmentId
   gradeClasswork:      (assignmentId, studentId, score) => {
     clearCache('grades');
     return api.patch(`/grades/classwork/${assignmentId}/student/${studentId}`, { score });
   },
+  // Manually add an offline classwork entry (quiz/midterm not posted online)
+  addManualClasswork:  (data) => { clearCache('grades'); return api.post('/grades/classwork/manual', data); },
   addGrade:            (data) => { clearCache('grades'); return api.post('/grades', data); },
   deleteGrade:         (id)   => { clearCache('grades'); return api.delete(`/grades/${id}`); },
 };
