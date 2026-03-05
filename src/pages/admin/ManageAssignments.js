@@ -28,6 +28,7 @@ const ManageAssignments = () => {
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState(null);
   const [file, setFile] = useState(null);
+  const [activeTab, setActiveTab] = useState('assignments'); // 'assignments' | 'quizzes'
   const [form, setForm] = useState({
     course: '', title: '', description: '',
     submissionType: 'link', submissionDetails: '', submissionLink: '',
@@ -74,17 +75,21 @@ const ManageAssignments = () => {
 
   useEffect(() => { load(); }, [load]);
 
-  const resetForm = () => {
+  const resetForm = (tab) => {
+    const isQuiz = (tab || activeTab) === 'quizzes';
     setForm({
       course: '', title: '', description: '',
-      submissionType: 'link', submissionDetails: '', submissionLink: '',
+      submissionType: isQuiz ? 'none' : 'link',
+      submissionDetails: '', submissionLink: '',
       deadline: '', totalMarks: '100', semester: 'Spring', year: String(new Date().getFullYear()),
-      isAnnouncement: false, examType: 'none', materialsCovered: '', examDuration: '', examLocation: '',
+      isAnnouncement: isQuiz,
+      examType: isQuiz ? 'quiz' : 'none',
+      materialsCovered: '', examDuration: '', examLocation: '',
     });
     setFile(null); setEditId(null); setError(''); setSuccess('');
   };
 
-  const openCreate = () => { resetForm(); setShowForm(true); };
+  const openCreate = () => { resetForm(activeTab); setShowForm(true); };
   const openEdit = (a) => {
     const deadlineLocal = a.deadline
       ? new Date(new Date(a.deadline).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)
@@ -276,14 +281,43 @@ const ManageAssignments = () => {
     </div>
   );
 
+  // Filter list by active tab
+  const listToShow = assignments.filter(a =>
+    activeTab === 'quizzes'
+      ? a.examType === 'quiz'
+      : a.examType !== 'quiz'
+  );
+
   return (
     <div className="ma-page">
       <div className="ma-header">
         <div>
-          <h1>📝 Manage Assignments</h1>
-          <p>Create, edit and track assignments for your courses</p>
+          <h1>{activeTab === 'quizzes' ? '📋 Manage Quizzes' : '📝 Manage Assignments'}</h1>
+          <p>{activeTab === 'quizzes'
+            ? 'Create and announce quizzes — auto-added to student classwork grades'
+            : 'Create, edit and track assignments for your courses'}</p>
         </div>
-        <button className="ma-btn-create" onClick={openCreate}>+ New Assignment</button>
+        <button className="ma-btn-create" onClick={openCreate}>
+          {activeTab === 'quizzes' ? '+ New Quiz' : '+ New Assignment'}
+        </button>
+      </div>
+
+      {/* ── Tabs ── */}
+      <div className="grade-mode-toggle" style={{ marginBottom: 16 }}>
+        <button className={`mode-btn ${activeTab === 'assignments' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('assignments'); setShowForm(false); resetForm('assignments'); }}>
+          📝 Assignments
+          <span style={{ marginLeft:6, fontSize:11, background:'rgba(255,255,255,0.15)', borderRadius:10, padding:'1px 7px' }}>
+            {assignments.filter(a => a.examType !== 'quiz').length}
+          </span>
+        </button>
+        <button className={`mode-btn ${activeTab === 'quizzes' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('quizzes'); setShowForm(false); resetForm('quizzes'); }}>
+          📋 Quizzes
+          <span style={{ marginLeft:6, fontSize:11, background:'rgba(255,255,255,0.15)', borderRadius:10, padding:'1px 7px' }}>
+            {assignments.filter(a => a.examType === 'quiz').length}
+          </span>
+        </button>
       </div>
 
       {error && !showForm && <div className="ma-alert ma-alert--err">{error}</div>}
@@ -292,7 +326,10 @@ const ManageAssignments = () => {
       {showForm && (
         <div className="ma-form-card">
           <div className="ma-form-header">
-            <h2>{editId ? '✏️ Edit Assignment' : '➕ New Assignment'}</h2>
+            <h2>{editId
+              ? (activeTab === 'quizzes' ? '✏️ Edit Quiz' : '✏️ Edit Assignment')
+              : (activeTab === 'quizzes' ? '➕ New Quiz' : '➕ New Assignment')}
+            </h2>
             <button className="ma-close-btn" onClick={() => { setShowForm(false); resetForm(); }}>✕</button>
           </div>
 
@@ -429,24 +466,31 @@ const ManageAssignments = () => {
             <div className="ma-form-actions">
               <button type="button" className="ma-btn-cancel" onClick={() => { setShowForm(false); resetForm(); }}>Cancel</button>
               <button type="submit" className="ma-btn-submit" disabled={submitting}>
-                {submitting ? 'Saving…' : editId ? '💾 Update Assignment' : '📤 Create & Notify Students'}
+                {submitting ? 'Saving…' : editId
+                  ? (activeTab === 'quizzes' ? '💾 Update Quiz' : '💾 Update Assignment')
+                  : (activeTab === 'quizzes' ? '📋 Create Quiz & Notify' : '📤 Create & Notify Students')}
               </button>
             </div>
           </form>
         </div>
       )}
 
-      {/* ── Assignments List ── */}
-      {assignments.length === 0 ? (
+      {/* ── List ── */}
+      {listToShow.length === 0 ? (
         <div className="ma-empty">
-          <span>📭</span>
-          <h3>No assignments yet</h3>
-          <p>Create your first assignment and students will be notified automatically.</p>
-          <button className="ma-btn-create" onClick={openCreate}>+ Create Assignment</button>
+          <span>{activeTab === 'quizzes' ? '📋' : '📭'}</span>
+          <h3>No {activeTab === 'quizzes' ? 'quizzes' : 'assignments'} yet</h3>
+          <p>{activeTab === 'quizzes'
+            ? 'Create a quiz — it will be announced to students and auto-added to their classwork grades.'
+            : 'Create your first assignment and students will be notified automatically.'}
+          </p>
+          <button className="ma-btn-create" onClick={openCreate}>
+            {activeTab === 'quizzes' ? '+ Create Quiz' : '+ Create Assignment'}
+          </button>
         </div>
       ) : (
         <div className="ma-list">
-          {assignments.map(a => (
+          {listToShow.map(a => (
             <div key={a._id}>
               <div className="ma-row">
                 <div className="ma-row-course">

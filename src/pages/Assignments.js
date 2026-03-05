@@ -35,6 +35,7 @@ const Assignments = () => {
   const [courseFilter, setCourseFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [expanded, setExpanded]       = useState(null);
+  const [activeTab, setActiveTab]     = useState('assignments'); // 'assignments' | 'quizzes'
 
   // Per-assignment submission state: { [assignmentId]: { file, uploading, done, error, existing } }
   const [subState, setSubState] = useState({});
@@ -97,6 +98,11 @@ const Assignments = () => {
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return assignments.filter(a => {
+      // Tab filter first
+      const isQuiz = a.examType === 'quiz';
+      if (activeTab === 'quizzes' && !isQuiz) return false;
+      if (activeTab === 'assignments' && isQuiz) return false;
+
       const matchSearch = !q ||
         a.title?.toLowerCase().includes(q) ||
         a.description?.toLowerCase().includes(q) ||
@@ -107,10 +113,7 @@ const Assignments = () => {
       const matchStatus = statusFilter === 'all' || (statusFilter === 'overdue' ? isOverdue : !isOverdue);
       return matchSearch && matchCourse && matchStatus;
     });
-  }, [assignments, search, courseFilter, statusFilter]);
-
-  const upcoming = assignments.filter(a => new Date(a.deadline) >= new Date()).length;
-  const overdue  = assignments.filter(a => new Date(a.deadline) < new Date()).length;
+  }, [assignments, search, courseFilter, statusFilter, activeTab]);
 
   if (loading) return (
     <div className="assignments-page">
@@ -128,17 +131,35 @@ const Assignments = () => {
     <div className="assignments-page">
       <div className="asgn-header">
         <div>
-          <h1>📝 {t('assignments.myAssignments')}</h1>
+          <h1>📝 {activeTab === 'quizzes' ? '📋 My Quizzes' : t('assignments.myAssignments')}</h1>
           <p>{t('assignments.title')}</p>
         </div>
         <div style={{ display:'flex', gap:12, alignItems:'center', flexWrap:'wrap' }}>
           <div className="asgn-stats">
-            <div className="asgn-stat"><span className="asgn-stat-val">{assignments.length}</span><span className="asgn-stat-lbl">{t('dashboard.total')}</span></div>
-            <div className="asgn-stat upcoming"><span className="asgn-stat-val">{upcoming}</span><span className="asgn-stat-lbl">Upcoming</span></div>
-            <div className="asgn-stat overdue"><span className="asgn-stat-val">{overdue}</span><span className="asgn-stat-lbl">{t('assignments.overdue')}</span></div>
+            <div className="asgn-stat"><span className="asgn-stat-val">{assignments.filter(a => activeTab === 'quizzes' ? a.examType === 'quiz' : a.examType !== 'quiz').length}</span><span className="asgn-stat-lbl">{t('dashboard.total')}</span></div>
+            <div className="asgn-stat upcoming"><span className="asgn-stat-val">{assignments.filter(a => (activeTab === 'quizzes' ? a.examType === 'quiz' : a.examType !== 'quiz') && new Date(a.deadline) >= new Date()).length}</span><span className="asgn-stat-lbl">Upcoming</span></div>
+            <div className="asgn-stat overdue"><span className="asgn-stat-val">{assignments.filter(a => (activeTab === 'quizzes' ? a.examType === 'quiz' : a.examType !== 'quiz') && new Date(a.deadline) < new Date()).length}</span><span className="asgn-stat-lbl">{t('assignments.overdue')}</span></div>
           </div>
           <button onClick={loadAssignments} style={{ padding:'8px 16px', background:'var(--card-bg)', border:'1px solid var(--border-color)', borderRadius:10, cursor:'pointer', fontSize:13, fontWeight:700, color:'var(--text-secondary)' }}>🔄 Refresh</button>
         </div>
+      </div>
+
+      {/* ── Tabs ── */}
+      <div className="grade-mode-toggle" style={{ marginBottom: 16 }}>
+        <button className={`mode-btn ${activeTab === 'assignments' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('assignments'); setSearch(''); setCourseFilter('all'); setStatusFilter('all'); }}>
+          📝 Assignments
+          <span style={{ marginLeft:6, fontSize:11, background:'rgba(255,255,255,0.15)', borderRadius:10, padding:'1px 7px' }}>
+            {assignments.filter(a => a.examType !== 'quiz').length}
+          </span>
+        </button>
+        <button className={`mode-btn ${activeTab === 'quizzes' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('quizzes'); setSearch(''); setCourseFilter('all'); setStatusFilter('all'); }}>
+          📋 Quizzes
+          <span style={{ marginLeft:6, fontSize:11, background:'rgba(255,255,255,0.15)', borderRadius:10, padding:'1px 7px' }}>
+            {assignments.filter(a => a.examType === 'quiz').length}
+          </span>
+        </button>
       </div>
 
       <div className="asgn-filters">
@@ -158,9 +179,16 @@ const Assignments = () => {
 
       {filtered.length === 0 ? (
         <div className="asgn-empty">
-          <span>📭</span>
-          <h3>{t('assignments.noAssignments')}</h3>
-          <p>{assignments.length === 0 ? 'No assignments have been posted for your courses yet.' : 'Try adjusting your filters.'}</p>
+          <span>{activeTab === 'quizzes' ? '📋' : '📭'}</span>
+          <h3>{activeTab === 'quizzes' ? 'No quizzes yet' : t('assignments.noAssignments')}</h3>
+          <p>{activeTab === 'quizzes'
+            ? (assignments.filter(a => a.examType === 'quiz').length === 0
+                ? 'No quizzes have been announced for your courses yet.'
+                : 'Try adjusting your filters.')
+            : (assignments.length === 0
+                ? 'No assignments have been posted for your courses yet.'
+                : 'Try adjusting your filters.')}
+          </p>
         </div>
       ) : (
         <div className="asgn-list">
